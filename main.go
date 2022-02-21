@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go/app"
+	"app"
 )
 
 func main() {
