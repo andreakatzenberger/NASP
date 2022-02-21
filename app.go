@@ -32,6 +32,7 @@ type App struct {
 	//sstable
 }
 
+//kreira sistem
 func CreateApp() *App {
 	config := LoadDefaultConfig()
 	return &App{
@@ -41,11 +42,15 @@ func CreateApp() *App {
 	}
 }
 
+//ubacuje element
+//prima kljuc tipa string i vrednost tipa bit array, a vraca bool
 func (app *App) Put(key string, value []byte) bool {
 	app.memtable.Add(key, value)
 	return true
 }
 
+//trazi element
+//prima kljuc tipa string, a vraca vrednost tipa bit array
 func (app *App) Get(key string) []byte {
 	if app.memtable.Find(key) == nil {
 		return nil
@@ -54,6 +59,8 @@ func (app *App) Get(key string) []byte {
 	}
 }
 
+//brise element
+//prima kljuc tipa string, vraca bool
 func (app *App) Delete(key string) bool {
 	app.memtable.Delete(key)
 	return true
