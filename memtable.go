@@ -12,6 +12,7 @@ type Memtable struct {
 	maxSize   int
 }
 
+//kreira nov, prazan memtable
 func CreateMemtable(maxHeight int, threshold float32, maxSize int) *Memtable {
 	return &Memtable{
 		structure: skiplist.CreateSkipList(maxHeight),
@@ -21,9 +22,10 @@ func CreateMemtable(maxHeight int, threshold float32, maxSize int) *Memtable {
 	}
 }
 
+//dodaje element u memtable
 func (m *Memtable) Add(key string, value []byte) {
 	percentage := (m.maxSize / m.size) * 100
-	if float32(percentage) >= m.threshold {
+	if float32(percentage) >= m.threshold { //proverava popunjenost memtablea
 		//m.Flush()
 	} else {
 		if m.structure.Find(key) != nil {
@@ -33,6 +35,7 @@ func (m *Memtable) Add(key string, value []byte) {
 	}
 }
 
+//trazi element u memtableu
 func (m *Memtable) Find(key string) []byte {
 	elem := m.structure.Find(key)
 	if elem == nil {
@@ -43,6 +46,7 @@ func (m *Memtable) Find(key string) []byte {
 	}
 }
 
+//brise element iz memtablea
 func (m *Memtable) Delete(key string) {
 	m.structure.Delete(key)
 }
