@@ -2,7 +2,7 @@ package memtable
 
 import (
 	"fmt"
-	"go/skiplist"
+	"skiplist"
 )
 
 type Memtable struct {
