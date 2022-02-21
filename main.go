@@ -52,7 +52,7 @@ func main() {
 		} else if option == "4" {
 			break
 		} else {
-			fmt.Println("Uneli ste nepostojecu opciju! Pokusajte ponovo.")
+			fmt.Println("Uneli ste nepostojecu opciju! Pokusajte ponovo!")
 		}
 	}
 }
