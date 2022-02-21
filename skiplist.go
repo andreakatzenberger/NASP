@@ -18,7 +18,7 @@ func GetValue(node *SkipListNode) []byte {
 	return node.value
 }
 
-//kreira novi elemnt pomocu prosledjenih vrednosti
+//kreira novi element pomocu prosledjenih vrednosti
 func createNode(key string, value []byte, timestamp int64, level int) *SkipListNode {
 	return &SkipListNode{
 		key:       key,
