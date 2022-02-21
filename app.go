@@ -1,16 +1,20 @@
 package app
 
 import (
-	"go/memtable"
+	"memtable"
 )
 
 type DefaulConfig struct {
+	//dodati za wal
+	
 	//za skiplistu
 	MaxHeight int
 
 	//za memtable
 	Threshold float32
 	MaxSize   int
+	
+	//dodati za sstable
 }
 
 //ucitava defaultne konfiguracije
