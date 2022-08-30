@@ -12,6 +12,7 @@ type SSTable struct {
 	IndexFilePath   string
 	SummaryFilePath string
 	FilterFilePath  string
+	TocFilePath     string
 }
 
 type OffSets struct {
@@ -23,11 +24,20 @@ func InitializeOffSets() (offSets *OffSets) {
 	return &OffSets{0, 0}
 }
 
-func CreateSSTable(dataFilePath, indexFilePath, summaryFilePath, bloomFilterFilePath string, records []record.Record) *SSTable {
+func CreateSSTable() *SSTable {
+	index := file.GetIndexSizeFromDirectory()
 
-	CreateFilterFile(bloomFilterFilePath, records)
+	sstable := SSTable{}
+	sstable.DataFilePath, sstable.IndexFilePath, sstable.SummaryFilePath,
+		sstable.FilterFilePath, sstable.TocFilePath = file.CreateFilePathsByLevel(index)
 
-	dataFile, indexFile, summaryFile := file.CreateFiles(dataFilePath, indexFilePath, summaryFilePath)
+	return &sstable
+}
+func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) {
+
+	CreateFilterFile(sstable.FilterFilePath, records)
+
+	dataFile, indexFile, summaryFile := file.CreateFiles(sstable.DataFilePath, sstable.IndexFilePath, sstable.SummaryFilePath)
 	dataFileWriter, indexFileWriter, summaryFileWriter := file.CreateFileWriters(dataFile, indexFile, summaryFile)
 	summaryHeader, summaryEntries := CreateSummaryHeaderAndEntries(records)
 	offSets := InitializeOffSets()
@@ -52,8 +62,9 @@ func CreateSSTable(dataFilePath, indexFilePath, summaryFilePath, bloomFilterFile
 		summaryEntry.WriteEntryToSummaryFile(summaryFileWriter)
 	}
 
+	sstable.WriteFileNamesToToc()
+
 	file.FlushAndCloseFiles(dataFileWriter, indexFileWriter, summaryFileWriter, dataFile, indexFile, summaryFile)
-	return &SSTable{dataFilePath, indexFilePath, summaryFilePath, bloomFilterFilePath}
 }
 
 func CreateFilterFile(bloomFilterFilePath string, records []record.Record) {

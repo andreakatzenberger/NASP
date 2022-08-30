@@ -2,28 +2,30 @@ package SSTable
 
 import (
 	error "Projekat/Handling"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 )
 
-func WriteFileNamesToToc(index string) {
-	file, err := os.OpenFile("Data/TOC/TOC_"+index+".txt", os.O_RDONLY, 0777)
+func (sstable *SSTable) WriteFileNamesToToc() {
+	fmt.Println(sstable.TocFilePath)
+	file, err := os.OpenFile(sstable.TocFilePath, os.O_CREATE|os.O_WRONLY, 0777)
 	error.ReturnError(err)
 
 	defer file.Close()
 
-	_, err = file.WriteString("Data/TOC/bloomfilter_" + index + ".gob\n")
+	_, err = file.WriteString(sstable.FilterFilePath + "\n")
 	error.ReturnError(err)
 
-	_, err = file.WriteString("Data/Summary/summary_" + index + ".gob\n")
+	_, err = file.WriteString(sstable.SummaryFilePath + "\n")
 	error.ReturnError(err)
 
-	_, err = file.WriteString("Data/Index/index_" + index + ".gob\n")
+	_, err = file.WriteString(sstable.IndexFilePath + "\n")
 	error.ReturnError(err)
 
-	_, err = file.WriteString("Data/Data/data_" + index + ".gob\n")
+	_, err = file.WriteString(sstable.DataFilePath + "\n")
 	error.ReturnError(err)
 
 	file.Close()

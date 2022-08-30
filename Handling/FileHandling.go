@@ -38,15 +38,17 @@ func FlushAndCloseFiles(dataFW, indexFW, summaryFW *bufio.Writer, dataF, indexF,
 	summaryF.Close()
 }
 
-func LevelSizeInDirectory() (level uint) {
+func GetIndexSizeFromDirectory() (index uint) {
 	files, _ := ioutil.ReadDir("Data/Data")
 	return uint(len(files) + 1)
 }
 
-func CreateFilePathsByLevel(level uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
-	dataFilePath = "Data/Data/data_" + strconv.Itoa(int(level)) + ".gob"
-	dataFilePath = "Data/Index/index_" + strconv.Itoa(int(level)) + ".gob"
-	dataFilePath = "Data/Summary/summary_" + strconv.Itoa(int(level)) + ".gob"
-	dataFilePath = "Data/BloomFilter/bloomfilter_" + strconv.Itoa(int(level)) + ".gob"
-	dataFilePath = "Data/TOC/toc_" + strconv.Itoa(int(level)) + ".txt"
+func CreateFilePathsByLevel(index uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
+	dataFilePath = "Data/Data/data_" + strconv.Itoa(int(index)) + ".gob"
+	indexFilePath = "Data/Index/index_" + strconv.Itoa(int(index)) + ".gob"
+	summaryFilePath = "Data/Summary/summary_" + strconv.Itoa(int(index)) + ".gob"
+	filterFilePath = "Data/BloomFilter/bloomfilter_" + strconv.Itoa(int(index)) + ".gob"
+	tocFilePath = "Data/TOC/toc_" + strconv.Itoa(int(index)) + ".txt"
+
+	return dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath
 }
