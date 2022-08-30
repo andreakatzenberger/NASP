@@ -91,7 +91,7 @@ func (filter *BloomFilter) WriteRecordsToBloomFilter(records *[]Structures.Recor
 }
 
 func WriteBloomFilter(fileName string, filter *BloomFilter) {
-	file, err := os.Create(fileName)
+	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0777)
 	Handling.PanicError(err)
 	defer file.Close()
 

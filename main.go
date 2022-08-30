@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Projekat/Handling"
 	record "Projekat/Structures"
 	"Projekat/Structures/SSTable"
 	"fmt"
@@ -20,13 +21,13 @@ func main() {
 		records = append(records, *record)
 	}
 
-	dataFilePath := "Data/Data/data.gob"
+	dataFilePath := "Data/Data/Data.gob"
 	indexFilePath := "Data/Index/index.gob"
 	summaryFilePath := "Data/Summary/summary.gob"
 	filterFilePath := "Data/Filter/filter.gob"
 
 	sstable := SSTable.SSTable{}
-	sstable.DataFilePath = "Data/Data/data.gob"
+	sstable.DataFilePath = "Data/Data/Data.gob"
 	sstable.IndexFilePath = "Data/Index/index.gob"
 	sstable.SummaryFilePath = "Data/Summary/summary.gob"
 	sstable.FilterFilePath = "Data/Filter/filter.gob"
@@ -37,6 +38,10 @@ func main() {
 	fmt.Println(found)
 	end := time.Since(start)
 	fmt.Println(end)
+	SSTable.WriteFileNamesToToc("1")
+	_, _, _, a := SSTable.ReadFileNamesFromToc("1")
+	fmt.Println(a)
+	fmt.Println(Handling.LevelSizeInDirectory())
 	//app := Structures.CreateApp()
 	//fmt.Println("KORISNICKI MENI")
 	//for {

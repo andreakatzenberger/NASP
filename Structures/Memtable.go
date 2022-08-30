@@ -51,8 +51,8 @@ func (m *Memtable) Delete(key string) {
 }
 
 //func (m *Memtable) Flush() ? {
-//	data := m.structure.GetAll()
+//	Data := m.structure.GetAll()
 //	m.size = 0
 //	m.structure.Empty()
-//	return data
+//	return Data
 //}

@@ -2,6 +2,7 @@ package Handling
 
 import (
 	"bufio"
+	"io/ioutil"
 	"os"
 )
 
@@ -34,4 +35,9 @@ func FlushAndCloseFiles(dataFW, indexFW, summaryFW *bufio.Writer, dataF, indexF,
 	dataF.Close()
 	indexF.Close()
 	summaryF.Close()
+}
+
+func LevelSizeInDirectory() (level uint) {
+	files, _ := ioutil.ReadDir("Data/Data")
+	return uint(len(files) + 1)
 }
