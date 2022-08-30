@@ -1,12 +1,11 @@
-package memtable
+package Structures
 
 import (
 	"fmt"
-	"skiplist"
 )
 
 type Memtable struct {
-	structure *skiplist.SkipList
+	structure *SkipList
 	threshold float32
 	size      int
 	maxSize   int
@@ -15,7 +14,7 @@ type Memtable struct {
 //kreira nov, prazan memtable
 func CreateMemtable(maxHeight int, threshold float32, maxSize int) *Memtable {
 	return &Memtable{
-		structure: skiplist.CreateSkipList(maxHeight),
+		structure: CreateSkipList(maxHeight),
 		threshold: threshold,
 		size:      0,
 		maxSize:   maxSize,
@@ -42,7 +41,7 @@ func (m *Memtable) Find(key string) []byte {
 		fmt.Println("Element sa zadacim kljucem ne postoji u memtableu.")
 		return nil
 	} else {
-		return skiplist.GetValue(elem)
+		return GetValue(elem)
 	}
 }
 

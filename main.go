@@ -1,12 +1,12 @@
 package main
 
 import (
+	"Projekat/Structures"
 	"fmt"
-	"app"
 )
 
 func main() {
-	app := app.CreateApp()
+	app := Structures.CreateApp()
 	fmt.Println("KORISNICKI MENI")
 	for {
 		fmt.Println("1) PUT\n" +

@@ -1,19 +1,15 @@
-package app
-
-import (
-	"memtable"
-)
+package Structures
 
 type DefaulConfig struct {
 	//dodati za wal
-	
+
 	//za skiplistu
 	MaxHeight int
 
 	//za memtable
 	Threshold float32
 	MaxSize   int
-	
+
 	//dodati za sstable
 }
 
@@ -28,7 +24,7 @@ func LoadDefaultConfig() *DefaulConfig {
 
 type App struct {
 	//wal
-	memtable memtable.Memtable
+	memtable Memtable
 	//sstable
 }
 
@@ -37,7 +33,7 @@ func CreateApp() *App {
 	config := LoadDefaultConfig()
 	return &App{
 		//wal
-		memtable: *memtable.CreateMemtable(config.MaxHeight, config.Threshold, config.MaxSize),
+		memtable: *CreateMemtable(config.MaxHeight, config.Threshold, config.MaxSize),
 		//sstable
 	}
 }
