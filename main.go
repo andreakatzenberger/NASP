@@ -1,28 +1,34 @@
 package main
 
 import (
-	record "Projekat/Structures"
 	"Projekat/Structures/SSTable"
 	"fmt"
 	"strconv"
 )
 
 func main() {
-	fmt.Println()
-	records := []record.Record{}
-
-	for i := 0; i < 100; i++ {
-		bytes := []byte{1, 2}
-		record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
-		records = append(records, *record)
-	}
-
-	sstable := SSTable.CreateSSTable()
-	sstable.WriteRecordsToSSTable(records)
-
-	//index := 1
+	//fmt.Println()
+	//records := []record.Record{}
 	//
-	//SSTable.GetSSTable()
+	//for i := 500; i < 600; i++ {
+	//	bytes := []byte{1, 2}
+	//	record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
+	//	records = append(records, *record)
+	//}
+	//
+	//index := file.GetIndexSizeFromDirectory()
+	//sstable := SSTable.CreateSSTable(index)
+	//sstable.WriteRecordsToSSTable(records)
+
+	indexes := SSTable.GetSSTableIndexes()
+	for _, index := range indexes {
+		indexUint, _ := strconv.ParseUint(index, 10, 64)
+		sstable := SSTable.CreateSSTable(uint(indexUint))
+		record, found := sstable.GetRecordInSStableForKey("500")
+		if found == true {
+			fmt.Println("Found record", record.Key, ", with value", record.Value)
+		}
+	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

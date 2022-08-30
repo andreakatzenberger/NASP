@@ -3,6 +3,8 @@ package SSTable
 import (
 	file "Projekat/Handling"
 	record "Projekat/Structures"
+	"io/ioutil"
+	"strings"
 )
 
 const indexInterval = 10
@@ -24,12 +26,11 @@ func InitializeOffSets() (offSets *OffSets) {
 	return &OffSets{0, 0}
 }
 
-func CreateSSTable() *SSTable {
-	index := file.GetIndexSizeFromDirectory()
+func CreateSSTable(index uint) *SSTable {
 
 	sstable := SSTable{}
 	sstable.DataFilePath, sstable.IndexFilePath, sstable.SummaryFilePath,
-		sstable.FilterFilePath, sstable.TocFilePath = file.CreateFilePathsByLevel(index)
+		sstable.FilterFilePath, sstable.TocFilePath = file.CreateFilePathsByIndex(index)
 
 	return &sstable
 }
@@ -93,4 +94,16 @@ func (sstable *SSTable) GetRecordInSStableForKey(key string) (*record.Record, bo
 		return &record.Record{}, false
 	}
 	return foundRecord, true
+}
+
+func GetSSTableIndexes() (indexs []string) {
+	dataPaths, _ := ioutil.ReadDir("Data/Data")
+	indexes := make([]string, 0)
+	for _, path := range dataPaths {
+		splitByLine := strings.Split(path.Name(), "_")
+		splitByPoint := strings.Split(splitByLine[1], ".")
+		index := splitByPoint[0]
+		indexes = append(indexes, index)
+	}
+	return indexes
 }

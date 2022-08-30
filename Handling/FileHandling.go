@@ -43,7 +43,7 @@ func GetIndexSizeFromDirectory() (index uint) {
 	return uint(len(files) + 1)
 }
 
-func CreateFilePathsByLevel(index uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
+func CreateFilePathsByIndex(index uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
 	dataFilePath = "Data/Data/data_" + strconv.Itoa(int(index)) + ".gob"
 	indexFilePath = "Data/Index/index_" + strconv.Itoa(int(index)) + ".gob"
 	summaryFilePath = "Data/Summary/summary_" + strconv.Itoa(int(index)) + ".gob"
