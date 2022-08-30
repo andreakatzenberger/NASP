@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
 func CreateFile(filePath string) *os.File {
@@ -40,4 +41,12 @@ func FlushAndCloseFiles(dataFW, indexFW, summaryFW *bufio.Writer, dataF, indexF,
 func LevelSizeInDirectory() (level uint) {
 	files, _ := ioutil.ReadDir("Data/Data")
 	return uint(len(files) + 1)
+}
+
+func CreateFilePathsByLevel(level uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
+	dataFilePath = "Data/Data/data_" + strconv.Itoa(int(level)) + ".gob"
+	dataFilePath = "Data/Index/index_" + strconv.Itoa(int(level)) + ".gob"
+	dataFilePath = "Data/Summary/summary_" + strconv.Itoa(int(level)) + ".gob"
+	dataFilePath = "Data/BloomFilter/bloomfilter_" + strconv.Itoa(int(level)) + ".gob"
+	dataFilePath = "Data/TOC/toc_" + strconv.Itoa(int(level)) + ".txt"
 }
