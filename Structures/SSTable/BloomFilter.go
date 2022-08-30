@@ -4,12 +4,10 @@ import (
 	"Projekat/Handling"
 	"Projekat/Structures"
 	"encoding/gob"
-	"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -124,24 +122,4 @@ func CheckKeyInFilterFile(recordKey string, filePath string) bool {
 	filter := ReadBloomFilter(filePath)
 	found := filter.Search(recordKey)
 	return found
-}
-
-func TestBloomFilter() {
-
-	filter := CreateBloomFilter(100, 0.05)
-
-	for i := 0; i < 100; i++ {
-		bytes := []byte{1, 2}
-		record := Structures.CreateRecord(strconv.Itoa(i), bytes, 0)
-		filter.Add(*record)
-	}
-
-	WriteBloomFilter("testBloomFilter.gob", filter)
-	fmt.Println(filter.Search("99"))
-	fmt.Println(filter.Search("124"))
-
-	newFiler := ReadBloomFilter("testBloomFilter.gob")
-	fmt.Println(newFiler.Search("99"))
-	fmt.Println(newFiler.Search("Mi nismo andjeli"))
-
 }

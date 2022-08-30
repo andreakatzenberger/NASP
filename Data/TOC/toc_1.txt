@@ -1,0 +1,4 @@
+Data/BloomFilter/bloomfilter_1.gob
+Data/Summary/summary_1.gob
+Data/Index/index_1.gob
+Data/Data/data_1.gob

@@ -1,41 +1,34 @@
 package main
 
 import (
-	record "Projekat/Structures"
 	"Projekat/Structures/SSTable"
 	"fmt"
 	"strconv"
-	"time"
 )
 
 func main() {
-	fmt.Println()
-	records := []record.Record{}
+	//fmt.Println()
+	//records := []record.Record{}
+	//
+	//for i := 500; i < 600; i++ {
+	//	bytes := []byte{1, 2}
+	//	record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
+	//	records = append(records, *record)
+	//}
+	//
+	//index := file.GetIndexSizeFromDirectory()
+	//sstable := SSTable.CreateSSTable(index)
+	//sstable.WriteRecordsToSSTable(records)
 
-	start := time.Now()
-
-	for i := 0; i < 100; i++ {
-		bytes := []byte{1, 2}
-		record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
-		records = append(records, *record)
+	indexes := SSTable.GetSSTableIndexes()
+	for _, index := range indexes {
+		indexUint, _ := strconv.ParseUint(index, 10, 64)
+		sstable := SSTable.CreateSSTable(uint(indexUint))
+		record, found := sstable.GetRecordInSStableForKey("500")
+		if found == true {
+			fmt.Println("Found record", record.Key, ", with value", record.Value)
+		}
 	}
-
-	sstable := SSTable.CreateSSTable()
-	fmt.Println(sstable.DataFilePath)
-	fmt.Println(sstable.IndexFilePath)
-	fmt.Println(sstable.FilterFilePath)
-
-	sstable.WriteRecordsToSSTable(records)
-
-	//SSTableProba.TestBloomFilter()
-	//_, found := sstable.GetRecordInSStableForKey("1")
-
-	//fmt.Println(found)
-	end := time.Since(start)
-	fmt.Println(end)
-	_, _, _, a := SSTable.ReadFileNamesFromToc("1")
-	fmt.Println(a)
-	//fmt.Println(Handling.LevelSizeInDirectory())
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
