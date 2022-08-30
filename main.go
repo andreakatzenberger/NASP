@@ -5,14 +5,11 @@ import (
 	"Projekat/Structures/SSTable"
 	"fmt"
 	"strconv"
-	"time"
 )
 
 func main() {
 	fmt.Println()
 	records := []record.Record{}
-
-	start := time.Now()
 
 	for i := 0; i < 100; i++ {
 		bytes := []byte{1, 2}
@@ -21,21 +18,11 @@ func main() {
 	}
 
 	sstable := SSTable.CreateSSTable()
-	fmt.Println(sstable.DataFilePath)
-	fmt.Println(sstable.IndexFilePath)
-	fmt.Println(sstable.FilterFilePath)
-
 	sstable.WriteRecordsToSSTable(records)
 
-	//SSTableProba.TestBloomFilter()
-	//_, found := sstable.GetRecordInSStableForKey("1")
-
-	//fmt.Println(found)
-	end := time.Since(start)
-	fmt.Println(end)
-	_, _, _, a := SSTable.ReadFileNamesFromToc("1")
-	fmt.Println(a)
-	//fmt.Println(Handling.LevelSizeInDirectory())
+	//index := 1
+	//
+	//SSTable.GetSSTable()
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
