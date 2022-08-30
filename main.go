@@ -1,6 +1,7 @@
 package main
 
 import (
+	record "Projekat/Structures"
 	"Projekat/Structures/SSTable"
 	"fmt"
 	"strconv"
@@ -21,13 +22,21 @@ func main() {
 	//sstable.WriteRecordsToSSTable(records)
 
 	indexes := SSTable.GetSSTableIndexes()
+	record1 := record.Record{}
+
 	for _, index := range indexes {
 		indexUint, _ := strconv.ParseUint(index, 10, 64)
 		sstable := SSTable.CreateSSTable(uint(indexUint))
-		record, found := sstable.GetRecordInSStableForKey("500")
+		record2, found := sstable.GetRecordInSStableForKey("1")
+
 		if found == true {
-			fmt.Println("Found record", record.Key, ", with value", record.Value)
+			if record2.Timestamp > record1.Timestamp {
+				record1 = *record2
+			}
 		}
+	}
+	if record1.Tombstone != 1 {
+		fmt.Println("Found record", record1.Key, "with", record1.Value, "value.")
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
