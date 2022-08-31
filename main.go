@@ -1,43 +1,86 @@
 package main
 
 import (
+	file "Projekat/Handling"
 	record "Projekat/Structures"
 	"Projekat/Structures/SSTable"
 	"fmt"
 	"strconv"
 )
 
-func main() {
-	//fmt.Println()
-	//records := []record.Record{}
-	//
-	//for i := 700; i < 800; i++ {
-	//	bytes := []byte{1, 2}
-	//	record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
-	//	records = append(records, *record)
-	//}
-	//
-	//index := file.GetIndexSizeFromDirectory()
-	//sstable := SSTable.CreateSSTable(index)
-	//sstable.WriteRecordsToSSTable(records)
+func increaseByOne(index string) string {
+	indexInt, _ := strconv.Atoi(index)
+	newIndex := indexInt + 1
+	indexString := strconv.Itoa(newIndex)
+	return indexString
+}
 
-	indexes := SSTable.GetSSTableIndexes()
-	record1 := record.Record{}
+func CreateRecords(first, last int) *[]record.Record {
+	records := []record.Record{}
+
+	for i := first; i < last; i++ {
+		bytes := []byte{1, 2}
+		record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
+		records = append(records, *record)
+	}
+	return &records
+}
+
+func PutToSSTable(records []record.Record) {
+	index := file.GetLastIndexFromDirectory()
+	index = increaseByOne(index)
+
+	sstable := SSTable.SSTableConstructor(index)
+	success := sstable.WriteRecordsToSSTable(records)
+	if success == true {
+		fmt.Println("Records are successfully writen to SSTable")
+	} else {
+		fmt.Println("Records are unsuccessfully writen to SSTable")
+	}
+}
+
+func GetFromSSTable(key string) {
+	indexes := SSTable.GetAllSSTableIndexes()
+	record := record.Record{}
+	exist := false
 
 	for _, index := range indexes {
-		indexUint, _ := strconv.ParseUint(index, 10, 64)
-		sstable := SSTable.CreateSSTable(uint(indexUint))
-		record2, found := sstable.GetRecordInSStableForKey("700")
+		sstable := SSTable.SSTableConstructor(index)
+		newRecord, found := sstable.GetRecordInSStableForKey(key)
 
 		if found == true {
-			if record2.Timestamp > record1.Timestamp {
-				record1 = *record2
+			if newRecord.Timestamp > record.Timestamp {
+				record = *newRecord
+				exist = true
 			}
 		}
 	}
-	if record1.Tombstone != 1 {
-		fmt.Println("Found record", record1.Key, "with", record1.Value, "value.", record1.Timestamp)
+	if exist == true {
+		fmt.Print("Record key ", record.Key, " found, ")
+		if record.Tombstone != 1 {
+			fmt.Println("with", record.Value, " value.")
+		} else {
+			fmt.Println("but it is deleted.")
+		}
+	} else {
+		fmt.Println("Record is not found")
 	}
+}
+
+func DeleteSSTable(index string) {
+
+	sstable := SSTable.SSTableConstructor(index)
+	exist := sstable.CheckIfSSTableExist()
+	if exist == true {
+		sstable.DeleteSSTableFiles()
+	}
+}
+
+func main() {
+	records := CreateRecords(50, 150)
+	PutToSSTable(*records)
+	GetFromSSTable("1")
+	DeleteSSTable("1")
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

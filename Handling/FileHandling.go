@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"io/ioutil"
 	"os"
-	"strconv"
+	"strings"
 )
 
 func CreateFile(filePath string) *os.File {
@@ -17,6 +17,11 @@ func OpenFile(filePath string) *os.File {
 	file, err := os.OpenFile(filePath, os.O_RDONLY, 0777)
 	PanicError(err)
 	return file
+}
+
+func DeleteFile(filePath string) {
+	err := os.Remove(filePath)
+	PanicError(err)
 }
 
 func CreateFiles(dataFilePath, indexFilePath, summaryFilePath string) (dataFile, indexFile, summaryFile *os.File) {
@@ -44,17 +49,24 @@ func FlushAndCloseFiles(dataFW, indexFW, summaryFW *bufio.Writer, dataF, indexF,
 	summaryF.Close()
 }
 
-func GetIndexSizeFromDirectory() (index uint) {
-	files, _ := ioutil.ReadDir("Data/Data")
-	return uint(len(files) + 1)
+func GetLastIndexFromDirectory() string {
+	directory, _ := ioutil.ReadDir("Data/Data")
+	directorySize := len(directory)
+	if directorySize > 0 {
+		filePath := directory[directorySize-1]
+		splitByLine := strings.Split(filePath.Name(), "-")
+		index := splitByLine[3]
+		return index
+	}
+	return "0"
 }
 
-func CreateFilePathsByIndex(index uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
-	dataFilePath = "Data/Data/user-table-data-" + strconv.Itoa(int(index)) + "-Data.gob"
-	indexFilePath = "Data/Index/user-table-data-" + strconv.Itoa(int(index)) + "-Index.gob"
-	summaryFilePath = "Data/Summary/user-table-data-" + strconv.Itoa(int(index)) + "-Sumarry.gob"
-	filterFilePath = "Data/BloomFilter/user-table-data-" + strconv.Itoa(int(index)) + "-BloomFilter.gob"
-	tocFilePath = "Data/TOC/user-table-data-" + strconv.Itoa(int(index)) + "-TOC.txt"
+func CreateFilePathsByIndex(index string) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
+	dataFilePath = "Data/Data/user-table-data-" + index + "-Data.gob"
+	indexFilePath = "Data/Index/user-table-data-" + index + "-Index.gob"
+	summaryFilePath = "Data/Summary/user-table-data-" + index + "-Sumarry.gob"
+	filterFilePath = "Data/BloomFilter/user-table-data-" + index + "-BloomFilter.gob"
+	tocFilePath = "Data/TOC/user-table-data-" + index + "-TOC.txt"
 
 	return dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath
 }

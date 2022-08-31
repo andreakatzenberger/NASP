@@ -15,6 +15,7 @@ type SSTable struct {
 	SummaryFilePath string
 	FilterFilePath  string
 	TocFilePath     string
+	IndexNumber     string
 }
 
 type OffSets struct {
@@ -26,15 +27,26 @@ func InitializeOffSets() (offSets *OffSets) {
 	return &OffSets{0, 0}
 }
 
-func CreateSSTable(index uint) *SSTable {
-
+func SSTableConstructor(index string) *SSTable {
 	sstable := SSTable{}
 	sstable.DataFilePath, sstable.IndexFilePath, sstable.SummaryFilePath,
 		sstable.FilterFilePath, sstable.TocFilePath = file.CreateFilePathsByIndex(index)
+	sstable.IndexNumber = index
 
 	return &sstable
 }
-func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) {
+
+func (sstable *SSTable) CheckIfSSTableExist() bool {
+	indexes := GetAllSSTableIndexes()
+	for _, index := range indexes {
+		if sstable.IndexNumber == index {
+			return true
+		}
+	}
+	return false
+}
+
+func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) bool {
 
 	CreateFilterFile(sstable.FilterFilePath, records)
 
@@ -66,6 +78,7 @@ func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) {
 	sstable.WriteFileNamesToToc()
 
 	file.FlushAndCloseFiles(dataFileWriter, indexFileWriter, summaryFileWriter, dataFile, indexFile, summaryFile)
+	return true
 }
 
 func CreateFilterFile(bloomFilterFilePath string, records []record.Record) {
@@ -96,7 +109,7 @@ func (sstable *SSTable) GetRecordInSStableForKey(key string) (*record.Record, bo
 	return foundRecord, true
 }
 
-func GetSSTableIndexes() (indexs []string) {
+func GetAllSSTableIndexes() (indexs []string) {
 	dataPaths, _ := ioutil.ReadDir("Data/Data")
 	indexes := make([]string, 0)
 	for _, path := range dataPaths {
@@ -105,4 +118,12 @@ func GetSSTableIndexes() (indexs []string) {
 		indexes = append(indexes, index)
 	}
 	return indexes
+}
+
+func (sstable *SSTable) DeleteSSTableFiles() {
+	file.DeleteFile(sstable.DataFilePath)
+	file.DeleteFile(sstable.TocFilePath)
+	file.DeleteFile(sstable.FilterFilePath)
+	file.DeleteFile(sstable.SummaryFilePath)
+	file.DeleteFile(sstable.IndexFilePath)
 }

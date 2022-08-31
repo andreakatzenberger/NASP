@@ -27,6 +27,8 @@ func ReadRecordFromDataFile(record *record.Record, reader *bufio.Reader) bool {
 func GetRecordInDataTableForOffset(filePath string, offset uint64) (*record.Record, bool) {
 	file, err := os.Open(filePath)
 	error.PanicError(err)
+
+	defer file.Close()
 	reader := bufio.NewReader(file)
 
 	file.Seek(int64(offset), 0)
