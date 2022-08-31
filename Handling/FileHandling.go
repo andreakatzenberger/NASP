@@ -13,6 +13,12 @@ func CreateFile(filePath string) *os.File {
 	return file
 }
 
+func OpenFile(filePath string) *os.File {
+	file, err := os.OpenFile(filePath, os.O_RDONLY, 0777)
+	PanicError(err)
+	return file
+}
+
 func CreateFiles(dataFilePath, indexFilePath, summaryFilePath string) (dataFile, indexFile, summaryFile *os.File) {
 	dataFile = CreateFile(dataFilePath)
 	indexFile = CreateFile(indexFilePath)

@@ -46,7 +46,7 @@ func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) {
 	for index, record := range records {
 		WriteRecordToDataFile(&record, dataFileWriter)
 
-		indexEntry := CreateIndexTableByRecord(&record, offSets.dataFileOffSet)
+		indexEntry := CreateIndexEntry(&record, offSets.dataFileOffSet)
 		indexEntry.WriteEntryToIndexFile(indexFileWriter)
 		offSets.dataFileOffSet += record.GetSize()
 

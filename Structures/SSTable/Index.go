@@ -15,6 +15,18 @@ type IndexTableEntry struct {
 	Offset  uint64
 }
 
+//Veličina index entry-a
+func (indexEntry *IndexTableEntry) GetSize() uint64 {
+	return 8 + indexEntry.KeySize + 8
+}
+
+//Kreiraj index entry pomoću zapisa
+func CreateIndexEntry(record *record.Record, offSet uint64) IndexTableEntry {
+	indexEntry := IndexTableEntry{KeySize: uint64(len(record.Key)), Key: record.Key, Offset: offSet}
+	return indexEntry
+}
+
+//Serijalizacija index entry-a i zapis u  fajl
 func (indexEntry *IndexTableEntry) WriteEntryToIndexFile(writer *bufio.Writer) {
 	err := binary.Write(writer, binary.LittleEndian, indexEntry.KeySize)
 	error.PanicError(err)
@@ -26,6 +38,7 @@ func (indexEntry *IndexTableEntry) WriteEntryToIndexFile(writer *bufio.Writer) {
 	error.PanicError(err)
 }
 
+//Deserijalizacija index entry-a iz fajla
 func (indexEntry *IndexTableEntry) ReadEntryFromIndexFile(reader *bufio.Reader) bool {
 	err := binary.Read(reader, binary.LittleEndian, &indexEntry.KeySize)
 	if error.EOFError(err) == true {
@@ -47,15 +60,7 @@ func (indexEntry *IndexTableEntry) ReadEntryFromIndexFile(reader *bufio.Reader) 
 	return false
 }
 
-func CreateIndexTableByRecord(record *record.Record, offSet uint64) IndexTableEntry {
-	indexEntry := IndexTableEntry{KeySize: uint64(len(record.Key)), Key: record.Key, Offset: offSet}
-	return indexEntry
-}
-
-func (indexEntry *IndexTableEntry) GetSize() uint64 {
-	return 8 + indexEntry.KeySize + 8
-}
-
+//Pronadji offset za ključ iz Data fajla
 func getOffsetInDataTableForKey(key string, filePath string, offset uint64, intervalSize uint64) (uint64, bool) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -84,6 +89,16 @@ func getOffsetInDataTableForKey(key string, filePath string, offset uint64, inte
 	return 0, false
 }
 
+//Ispiši index entry
+func (indexEntry *IndexTableEntry) Print(i int) {
+	fmt.Println("Entry", i)
+	fmt.Println("Key size:", indexEntry.KeySize)
+	fmt.Println("Key:", indexEntry.Key)
+	fmt.Println("Offset:", indexEntry.Offset)
+	fmt.Println()
+}
+
+//Ispiši index entry iz index fajla
 func PrintIndexFile(indexFilePath string) {
 	file, err := os.Open(indexFilePath)
 	error.PanicError(err)
@@ -98,12 +113,7 @@ func PrintIndexFile(indexFilePath string) {
 		if eof {
 			break
 		}
-
-		fmt.Println("Entry", i)
-		fmt.Println("Key size:", indexEntry.KeySize)
-		fmt.Println("Key:", indexEntry.Key)
-		fmt.Println("Offset:", indexEntry.Offset)
-		fmt.Println()
+		indexEntry.Print(i)
 		i++
 	}
 }

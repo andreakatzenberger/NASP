@@ -25,6 +25,12 @@ type SummaryTableEntry struct {
 	Offset  uint64
 }
 
+//Veličina summary entry-a
+func (summaryEntry *SummaryTableEntry) GetSize() uint64 {
+	return 8 + summaryEntry.KeySize + 8
+}
+
+//Kreiraj header (sazdrzi prvi i zadnji ključ u index fajlu)
 func CreateSummaryHeader(records []record.Record) *SummaryTableHeader {
 	summaryHeader := SummaryTableHeader{}
 	summaryHeader.MinKey = records[0].Key
@@ -34,24 +40,14 @@ func CreateSummaryHeader(records []record.Record) *SummaryTableHeader {
 	return &summaryHeader
 }
 
-func (summaryHeader *SummaryTableHeader) Print() {
-	fmt.Println("Min key size:", summaryHeader.MinKeySize)
-	fmt.Println("Min key:", summaryHeader.MinKey)
-	fmt.Println("Max key size:", summaryHeader.MaxKeySize)
-	fmt.Println("Max key:", summaryHeader.MaxKey)
-	fmt.Println("Summary entries size:", summaryHeader.EntriesSize)
+//Kreiraj summary sa headerom i entry-ma
+func CreateSummaryHeaderAndEntries(records []record.Record) (summaryHeader *SummaryTableHeader, summaryEntries []SummaryTableEntry) {
+	summaryHeader = CreateSummaryHeader(records)
+	summaryEntries = make([]SummaryTableEntry, 0)
+	return summaryHeader, summaryEntries
 }
 
-func (summaryEntry *SummaryTableEntry) Print() {
-	fmt.Println("Key size:", summaryEntry.KeySize)
-	fmt.Println("Key:", summaryEntry.Key)
-	fmt.Println("Offset:", summaryEntry.Offset)
-}
-
-func (summaryEntry *SummaryTableEntry) GetSize() uint64 {
-	return 8 + summaryEntry.KeySize + 8
-}
-
+//Serijalizacija summary haeder-a i zapis u fajl
 func (summaryHeader *SummaryTableHeader) WriteHeaderToSummaryFile(writer *bufio.Writer) {
 	err := binary.Write(writer, binary.LittleEndian, summaryHeader.MinKeySize)
 	error.PanicError(err)
@@ -69,6 +65,7 @@ func (summaryHeader *SummaryTableHeader) WriteHeaderToSummaryFile(writer *bufio.
 	error.PanicError(err)
 }
 
+//Serijalizacija summary entry-a i zapis u  fajl
 func (summaryEntry *SummaryTableEntry) WriteEntryToSummaryFile(writer *bufio.Writer) {
 	err := binary.Write(writer, binary.LittleEndian, summaryEntry.KeySize)
 	error.PanicError(err)
@@ -80,6 +77,7 @@ func (summaryEntry *SummaryTableEntry) WriteEntryToSummaryFile(writer *bufio.Wri
 	error.PanicError(err)
 }
 
+//Deserijalizacija summary header-a iz fajla
 func (summaryHeader *SummaryTableHeader) ReadHeaderFromSummaryFile(reader *bufio.Reader) bool {
 	err := binary.Read(reader, binary.LittleEndian, &summaryHeader.MinKeySize)
 	if error.EOFError(err) == true {
@@ -113,6 +111,7 @@ func (summaryHeader *SummaryTableHeader) ReadHeaderFromSummaryFile(reader *bufio
 	return false
 }
 
+//Deserijalizacija index entry-a iz fajla
 func (summaryEntry *SummaryTableEntry) ReadEntryFromSummaryFile(reader *bufio.Reader) bool {
 	err := binary.Read(reader, binary.LittleEndian, &summaryEntry.KeySize)
 	if error.EOFError(err) == true {
@@ -134,12 +133,7 @@ func (summaryEntry *SummaryTableEntry) ReadEntryFromSummaryFile(reader *bufio.Re
 	return false
 }
 
-func CreateSummaryHeaderAndEntries(records []record.Record) (summaryHeader *SummaryTableHeader, summaryEntries []SummaryTableEntry) {
-	summaryHeader = CreateSummaryHeader(records)
-	summaryEntries = make([]SummaryTableEntry, 0)
-	return summaryHeader, summaryEntries
-}
-
+//Pronadji offset za ključ iz Index fajla
 func getOffsetInIndexTableForKey(key string, filePath string) (uint64, bool) {
 	file, err := os.Open(filePath)
 	error.PanicError(err)
@@ -184,6 +178,23 @@ func getOffsetInIndexTableForKey(key string, filePath string) (uint64, bool) {
 	return prevSummaryEntry.Offset, true
 }
 
+//Ispiši summary header
+func (summaryHeader *SummaryTableHeader) Print() {
+	fmt.Println("Min key size:", summaryHeader.MinKeySize)
+	fmt.Println("Min key:", summaryHeader.MinKey)
+	fmt.Println("Max key size:", summaryHeader.MaxKeySize)
+	fmt.Println("Max key:", summaryHeader.MaxKey)
+	fmt.Println("Summary entries size:", summaryHeader.EntriesSize)
+}
+
+//Ispiši summary entry
+func (summaryEntry *SummaryTableEntry) Print() {
+	fmt.Println("Key size:", summaryEntry.KeySize)
+	fmt.Println("Key:", summaryEntry.Key)
+	fmt.Println("Offset:", summaryEntry.Offset)
+}
+
+//Ispiši summary header i entry-je iz fajla
 func PrintSummaryFile(filePath string) {
 	file, err := os.Open(filePath)
 	error.PanicError(err)

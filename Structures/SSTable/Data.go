@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+//Serijalizacija zapisa i upisati u fajl
 func WriteRecordToDataFile(record *record.Record, writer *bufio.Writer) {
 	recordByteSlice := record.EncodeRecord()
 
@@ -16,11 +17,13 @@ func WriteRecordToDataFile(record *record.Record, writer *bufio.Writer) {
 	error.ReturnError(err)
 }
 
+//Serijalizacija zapisa iz fajla
 func ReadRecordFromDataFile(record *record.Record, reader *bufio.Reader) bool {
 	eof := record.DecodeRecord(reader)
 	return eof
 }
 
+//GetRecordInDataTableForOffset
 func GetRecordInDataTableForOffset(filePath string, offset uint64) (*record.Record, bool) {
 	file, err := os.Open(filePath)
 	error.PanicError(err)
@@ -37,6 +40,7 @@ func GetRecordInDataTableForOffset(filePath string, offset uint64) (*record.Reco
 	return &foundRecord, true
 }
 
+//Ispiši zapise iz data fajla
 func PrintDataFile(dataFilePath string) {
 	file, err := os.Open(dataFilePath)
 	error.PanicError(err)

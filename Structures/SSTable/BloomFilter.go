@@ -7,44 +7,40 @@ import (
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
-	"os"
 	"time"
 )
 
 type BloomFilter struct {
 	M         uint
 	K         uint
-	P         float64
 	Set       []byte
 	hFunc     []hash.Hash32
 	TimeConst uint
 }
 
+//Izračunaj veličinu bit seta M
 func CalculateM(expectedElements int, falsePositiveRate float64) uint {
 	return uint(math.Ceil(float64(expectedElements) * math.Abs(math.Log(falsePositiveRate)) / math.Pow(math.Log(2), float64(2))))
 }
 
+//Izračunaj optimalan broj hash funkcija k
 func CalculateK(expectedElements int, m uint) uint {
 	return uint(math.Ceil((float64(m) / float64(expectedElements)) * math.Log(2)))
 }
 
-func CreateHashFunctions(k uint) ([]hash.Hash32, uint) {
+//Kreiraj hash funkciju
+func CreateHashFunctions(k uint, ts uint) ([]hash.Hash32, uint) {
 	var h []hash.Hash32
-	ts := uint(time.Now().Unix())
+	if ts == 0 {
+		ts = uint(time.Now().Unix())
+	}
 	for i := uint(0); i < k; i++ {
 		h = append(h, murmur3.New32WithSeed(uint32(ts+1)))
 	}
 	return h, ts
 }
 
-func CopyHashFunctions(k uint, tc uint) []hash.Hash32 {
-	var h []hash.Hash32
-	for i := uint(0); i < k; i++ {
-		h = append(h, murmur3.New32WithSeed(uint32(tc+1)))
-	}
-	return h
-}
-
+//Hashiranje, koristimo za dodavanje i pretragu
 func HashIt(hashF hash.Hash32, record string, m uint) uint32 {
 	_, err := hashF.Write([]byte(record))
 	Handling.PanicError(err)
@@ -54,16 +50,17 @@ func HashIt(hashF hash.Hash32, record string, m uint) uint32 {
 	return i
 }
 
+//Kreiranje bloom filtera, navodimo veličinu i falsepositive rate
 func CreateBloomFilter(expectedElements uint, falsePositiveRate float64) *BloomFilter {
 	filter := BloomFilter{}
 	filter.M = CalculateM(int(expectedElements), falsePositiveRate)
 	filter.K = CalculateK(int(expectedElements), filter.M)
-	filter.hFunc, filter.TimeConst = CreateHashFunctions(filter.K)
+	filter.hFunc, filter.TimeConst = CreateHashFunctions(filter.K, filter.TimeConst)
 	filter.Set = make([]byte, filter.M)
-	filter.P = falsePositiveRate
 	return &filter
 }
 
+//Dodavanje ključa u bloom filter
 func (filter *BloomFilter) Add(record Structures.Record) {
 	for _, hashF := range filter.hFunc {
 		i := HashIt(hashF, record.Key, filter.M)
@@ -71,6 +68,7 @@ func (filter *BloomFilter) Add(record Structures.Record) {
 	}
 }
 
+//Pretraga ključa u bloom filteru
 func (filter *BloomFilter) Search(record string) bool {
 	for _, hashF := range filter.hFunc {
 		i := HashIt(hashF, record, filter.M)
@@ -81,6 +79,7 @@ func (filter *BloomFilter) Search(record string) bool {
 	return true
 }
 
+//Upis svih ključeva u bloom filter
 func (filter *BloomFilter) WriteRecordsToBloomFilter(records *[]Structures.Record) BloomFilter {
 	for _, record := range *records {
 		filter.Add(record)
@@ -88,36 +87,35 @@ func (filter *BloomFilter) WriteRecordsToBloomFilter(records *[]Structures.Recor
 	return *filter
 }
 
-func WriteBloomFilter(fileName string, filter *BloomFilter) {
-	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0777)
-	Handling.PanicError(err)
+//Zapis bloom filtera u fajl
+func WriteBloomFilter(filePath string, filter *BloomFilter) {
+	file := Handling.CreateFile(filePath)
 	defer file.Close()
 
 	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(filter)
+	err := encoder.Encode(filter)
 	Handling.PanicError(err)
 }
 
-func ReadBloomFilter(fileName string) (filter *BloomFilter) {
-	file, err := os.Open(fileName)
-	Handling.PanicError(err)
+//Čitanje bloom filtera iz fajla
+func ReadBloomFilter(filePath string) BloomFilter {
+	file := Handling.OpenFile(filePath)
 	defer file.Close()
 
 	decoder := gob.NewDecoder(file)
-	filter = new(BloomFilter)
-	_, err = file.Seek(0, 0)
-	Handling.ReturnError(err)
+	filter := BloomFilter{}
+	err := decoder.Decode(&filter)
+	Handling.PanicError(err)
 
-	for {
-		err = decoder.Decode(filter)
-		if err != nil {
-			break
-		}
+	filter.hFunc, _ = CreateHashFunctions(filter.K, filter.TimeConst)
+	err = file.Close()
+	if err != nil {
+		Handling.PanicError(err)
 	}
-	filter.hFunc = CopyHashFunctions(filter.K, filter.TimeConst)
-	return
+	return filter
 }
 
+//Pretraga ključa u bloom filter fajlu
 func CheckKeyInFilterFile(recordKey string, filePath string) bool {
 	filter := ReadBloomFilter(filePath)
 	found := filter.Search(recordKey)

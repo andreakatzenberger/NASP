@@ -11,7 +11,7 @@ func main() {
 	//fmt.Println()
 	//records := []record.Record{}
 	//
-	//for i := 500; i < 600; i++ {
+	//for i := 100; i < 200; i++ {
 	//	bytes := []byte{1, 2}
 	//	record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
 	//	records = append(records, *record)
@@ -27,7 +27,7 @@ func main() {
 	for _, index := range indexes {
 		indexUint, _ := strconv.ParseUint(index, 10, 64)
 		sstable := SSTable.CreateSSTable(uint(indexUint))
-		record2, found := sstable.GetRecordInSStableForKey("1")
+		record2, found := sstable.GetRecordInSStableForKey("700")
 
 		if found == true {
 			if record2.Timestamp > record1.Timestamp {
@@ -36,7 +36,7 @@ func main() {
 		}
 	}
 	if record1.Tombstone != 1 {
-		fmt.Println("Found record", record1.Key, "with", record1.Value, "value.")
+		fmt.Println("Found record", record1.Key, "with", record1.Value, "value.", record1.Timestamp)
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

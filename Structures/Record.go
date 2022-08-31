@@ -20,8 +20,9 @@ type Record struct {
 	Value     []byte
 }
 
+//Kreiraj zapis
 func CreateRecord(key string, value []byte, delete byte) *Record {
-	crc := CRC32(value)
+	crc := crc32.ChecksumIEEE(value)
 	timestamp := time.Now().Unix()
 	tombstone := delete
 	keySize := uint64(len([]byte(key)))
@@ -29,42 +30,41 @@ func CreateRecord(key string, value []byte, delete byte) *Record {
 	return &Record{crc, timestamp, tombstone, keySize, valueSize, key, value}
 }
 
-func CRC32(data []byte) uint32 {
-	return crc32.ChecksumIEEE(data)
-}
-
+//Veličina zapisa, treba za offset
 func (record *Record) GetSize() uint64 {
 	return 4 + 8 + 1 + 8 + 8 + record.KeySize + record.ValueSize
 }
 
+//Enkodiraj, zapiši sve u bajtove u bafer
 func (record *Record) EncodeRecord() []byte {
 	recordBytes := make([]byte, 0, record.GetSize())
-	w := bytes.NewBuffer(recordBytes)
+	buffer := bytes.NewBuffer(recordBytes)
 
-	err := binary.Write(w, binary.LittleEndian, record.Crc)
+	err := binary.Write(buffer, binary.LittleEndian, record.Crc)
 	Handling.ReturnError(err)
 
-	err = binary.Write(w, binary.LittleEndian, record.Timestamp)
+	err = binary.Write(buffer, binary.LittleEndian, record.Timestamp)
 	Handling.ReturnError(err)
 
-	err = binary.Write(w, binary.LittleEndian, record.Tombstone)
+	err = binary.Write(buffer, binary.LittleEndian, record.Tombstone)
 	Handling.ReturnError(err)
 
-	err = binary.Write(w, binary.LittleEndian, record.KeySize)
+	err = binary.Write(buffer, binary.LittleEndian, record.KeySize)
 	Handling.ReturnError(err)
 
-	err = binary.Write(w, binary.LittleEndian, record.ValueSize)
+	err = binary.Write(buffer, binary.LittleEndian, record.ValueSize)
 	Handling.ReturnError(err)
 
-	err = binary.Write(w, binary.LittleEndian, []byte(record.Key))
+	err = binary.Write(buffer, binary.LittleEndian, []byte(record.Key))
 	Handling.ReturnError(err)
 
-	err = binary.Write(w, binary.LittleEndian, record.Value)
+	err = binary.Write(buffer, binary.LittleEndian, record.Value)
 	Handling.ReturnError(err)
 
-	return w.Bytes()
+	return buffer.Bytes()
 }
 
+//Dekodiraj, pročitaj bajtove i ubaci u record
 func (record *Record) DecodeRecord(reader *bufio.Reader) bool {
 	err := binary.Read(reader, binary.LittleEndian, &record.Crc)
 	if Handling.EOFError(err) == true {
@@ -107,6 +107,7 @@ func (record *Record) DecodeRecord(reader *bufio.Reader) bool {
 	return false
 }
 
+//Ispis Zapisa
 func (record *Record) Print() {
 	fmt.Println("Crc:", record.Crc)
 	fmt.Println("TimeStamp:", record.Timestamp)
