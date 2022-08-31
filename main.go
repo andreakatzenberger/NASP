@@ -77,9 +77,23 @@ func DeleteSSTable(index string) {
 }
 
 func main() {
-	records := CreateRecords(50, 150)
+
+	//Zapisi u fajlu:
+	//Index number 1 - 0:99
+	//Index number 2 - 100:199
+	//Index number 3 - 500:600
+	//Index number 4 - 0:99
+
+	// Kreiraj zapise
+	records := CreateRecords(0, 100)
+
+	// Upisi zapise u SSTable
 	PutToSSTable(*records)
-	GetFromSSTable("1")
+
+	// Dobavi zapis preko kljuca iz SSTable-a
+	GetFromSSTable("50")
+
+	// Obavi SSTable preko njegovog indexa
 	DeleteSSTable("1")
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
