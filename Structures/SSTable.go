@@ -1,8 +1,7 @@
-package SSTable
+package Structures
 
 import (
-	file "Projekat/Handling"
-	record "Projekat/Structures"
+	file "../Handling"
 	"io/ioutil"
 	"strings"
 )
@@ -46,7 +45,7 @@ func (sstable *SSTable) CheckIfSSTableExist() bool {
 	return false
 }
 
-func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) bool {
+func (sstable *SSTable) WriteRecordsToSSTable(records []Record) bool {
 
 	CreateFilterFile(sstable.FilterFilePath, records)
 
@@ -81,30 +80,30 @@ func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) bool {
 	return true
 }
 
-func CreateFilterFile(bloomFilterFilePath string, records []record.Record) {
+func CreateFilterFile(bloomFilterFilePath string, records []Record) {
 
 	filter := CreateBloomFilter(uint(len(records)), 0.05)
 	filter.WriteRecordsToBloomFilter(&records)
 	WriteBloomFilter(bloomFilterFilePath, filter)
 }
 
-func (sstable *SSTable) GetRecordInSStableForKey(key string) (*record.Record, bool) {
+func (sstable *SSTable) GetRecordInSStableForKey(key string) (*Record, bool) {
 
 	found := CheckKeyInFilterFile(key, sstable.FilterFilePath)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	offsetIndexTable, found := getOffsetInIndexTableForKey(key, sstable.SummaryFilePath)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	offsetDataTable, found := getOffsetInDataTableForKey(key, sstable.IndexFilePath, offsetIndexTable, indexInterval)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	foundRecord, found := GetRecordInDataTableForOffset(sstable.DataFilePath, offsetDataTable)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	return foundRecord, true
 }

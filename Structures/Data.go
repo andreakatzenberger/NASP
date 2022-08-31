@@ -1,8 +1,7 @@
-package SSTable
+package Structures
 
 import (
-	error "Projekat/Handling"
-	record "Projekat/Structures"
+	error "../Handling"
 	"bufio"
 	"encoding/binary"
 	"fmt"
@@ -10,7 +9,7 @@ import (
 )
 
 //Serijalizacija zapisa i upisati u fajl
-func WriteRecordToDataFile(record *record.Record, writer *bufio.Writer) {
+func WriteRecordToDataFile(record *Record, writer *bufio.Writer) {
 	recordByteSlice := record.EncodeRecord()
 
 	err := binary.Write(writer, binary.LittleEndian, recordByteSlice)
@@ -18,13 +17,13 @@ func WriteRecordToDataFile(record *record.Record, writer *bufio.Writer) {
 }
 
 //Serijalizacija zapisa iz fajla
-func ReadRecordFromDataFile(record *record.Record, reader *bufio.Reader) bool {
+func ReadRecordFromDataFile(record *Record, reader *bufio.Reader) bool {
 	eof := record.DecodeRecord(reader)
 	return eof
 }
 
 //GetRecordInDataTableForOffset
-func GetRecordInDataTableForOffset(filePath string, offset uint64) (*record.Record, bool) {
+func GetRecordInDataTableForOffset(filePath string, offset uint64) (*Record, bool) {
 	file, err := os.Open(filePath)
 	error.PanicError(err)
 
@@ -33,10 +32,10 @@ func GetRecordInDataTableForOffset(filePath string, offset uint64) (*record.Reco
 
 	file.Seek(int64(offset), 0)
 
-	foundRecord := record.Record{}
+	foundRecord := Record{}
 	eof := ReadRecordFromDataFile(&foundRecord, reader)
 	if eof {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 
 	return &foundRecord, true
@@ -50,7 +49,7 @@ func PrintDataFile(dataFilePath string) {
 	reader := bufio.NewReader(file)
 
 	i := 1
-	recordToPrint := record.Record{}
+	recordToPrint := Record{}
 	for {
 		eof := recordToPrint.DecodeRecord(reader)
 		if eof {
