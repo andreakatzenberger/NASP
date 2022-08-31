@@ -100,9 +100,8 @@ func GetSSTableIndexes() (indexs []string) {
 	dataPaths, _ := ioutil.ReadDir("Data/Data")
 	indexes := make([]string, 0)
 	for _, path := range dataPaths {
-		splitByLine := strings.Split(path.Name(), "_")
-		splitByPoint := strings.Split(splitByLine[1], ".")
-		index := splitByPoint[0]
+		splitByLine := strings.Split(path.Name(), "-")
+		index := splitByLine[3]
 		indexes = append(indexes, index)
 	}
 	return indexes

@@ -1,4 +1,0 @@
-Data/BloomFilter/bloomfilter_3.gob
-Data/Summary/summary_3.gob
-Data/Index/index_3.gob
-Data/Data/data_3.gob

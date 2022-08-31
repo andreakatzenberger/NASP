@@ -2,7 +2,6 @@ package SSTable
 
 import (
 	error "Projekat/Handling"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -10,7 +9,6 @@ import (
 )
 
 func (sstable *SSTable) WriteFileNamesToToc() {
-	fmt.Println(sstable.TocFilePath)
 	file, err := os.OpenFile(sstable.TocFilePath, os.O_CREATE|os.O_WRONLY, 0777)
 	error.ReturnError(err)
 
@@ -32,7 +30,7 @@ func (sstable *SSTable) WriteFileNamesToToc() {
 }
 
 func ReadFileNamesFromToc(index string) (filterPath, summaryPath, IndexPath, DataPath string) {
-	file, err := ioutil.ReadFile("Data/TOC/TOC_" + index + ".txt")
+	file, err := ioutil.ReadFile("Data/TOC/user-table-data-" + index + "-TOC.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -11,7 +11,7 @@ func main() {
 	//fmt.Println()
 	//records := []record.Record{}
 	//
-	//for i := 100; i < 200; i++ {
+	//for i := 700; i < 800; i++ {
 	//	bytes := []byte{1, 2}
 	//	record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
 	//	records = append(records, *record)

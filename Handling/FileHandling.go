@@ -50,11 +50,11 @@ func GetIndexSizeFromDirectory() (index uint) {
 }
 
 func CreateFilePathsByIndex(index uint) (dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath string) {
-	dataFilePath = "Data/Data/data_" + strconv.Itoa(int(index)) + ".gob"
-	indexFilePath = "Data/Index/index_" + strconv.Itoa(int(index)) + ".gob"
-	summaryFilePath = "Data/Summary/summary_" + strconv.Itoa(int(index)) + ".gob"
-	filterFilePath = "Data/BloomFilter/bloomfilter_" + strconv.Itoa(int(index)) + ".gob"
-	tocFilePath = "Data/TOC/toc_" + strconv.Itoa(int(index)) + ".txt"
+	dataFilePath = "Data/Data/user-table-data-" + strconv.Itoa(int(index)) + "-Data.gob"
+	indexFilePath = "Data/Index/user-table-data-" + strconv.Itoa(int(index)) + "-Index.gob"
+	summaryFilePath = "Data/Summary/user-table-data-" + strconv.Itoa(int(index)) + "-Sumarry.gob"
+	filterFilePath = "Data/BloomFilter/user-table-data-" + strconv.Itoa(int(index)) + "-BloomFilter.gob"
+	tocFilePath = "Data/TOC/user-table-data-" + strconv.Itoa(int(index)) + "-TOC.txt"
 
 	return dataFilePath, indexFilePath, summaryFilePath, filterFilePath, tocFilePath
 }
