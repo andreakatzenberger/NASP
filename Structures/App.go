@@ -1,6 +1,6 @@
 package Structures
 
-type DefaulConfig struct {
+type DefaultConfig struct {
 	//dodati za wal
 
 	//za skiplistu
@@ -9,23 +9,20 @@ type DefaulConfig struct {
 	//za memtable
 	Threshold float32
 	MaxSize   int
-
-	//dodati za sstable
 }
 
 //ucitava defaultne konfiguracije
-func LoadDefaultConfig() *DefaulConfig {
-	return &DefaulConfig{
+func LoadDefaultConfig() *DefaultConfig {
+	return &DefaultConfig{
 		MaxHeight: 5,
 		Threshold: 80,
-		MaxSize:   10,
+		MaxSize:   5,
 	}
 }
 
 type App struct {
 	//wal
 	memtable Memtable
-	//sstable
 }
 
 //kreira sistem
@@ -49,7 +46,8 @@ func (app *App) Put(key string, value []byte) bool {
 //prima kljuc tipa string, a vraca vrednost tipa bit array
 func (app *App) Get(key string) []byte {
 	if app.memtable.Find(key) == nil {
-		return nil
+		return GetFromSSTable(key)
+		//return nil
 	} else {
 		return app.memtable.Find(key)
 	}

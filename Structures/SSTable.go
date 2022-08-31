@@ -1,9 +1,11 @@
-package SSTable
+package Structures
 
 import (
 	file "Projekat/Handling"
-	record "Projekat/Structures"
+	//SSTable2 "Projekat/Structures/SSTable"
+	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 )
 
@@ -46,7 +48,7 @@ func (sstable *SSTable) CheckIfSSTableExist() bool {
 	return false
 }
 
-func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) bool {
+func (sstable *SSTable) WriteRecordsToSSTable(records []Record) bool {
 
 	CreateFilterFile(sstable.FilterFilePath, records)
 
@@ -81,30 +83,30 @@ func (sstable *SSTable) WriteRecordsToSSTable(records []record.Record) bool {
 	return true
 }
 
-func CreateFilterFile(bloomFilterFilePath string, records []record.Record) {
+func CreateFilterFile(bloomFilterFilePath string, records []Record) {
 
 	filter := CreateBloomFilter(uint(len(records)), 0.05)
 	filter.WriteRecordsToBloomFilter(&records)
 	WriteBloomFilter(bloomFilterFilePath, filter)
 }
 
-func (sstable *SSTable) GetRecordInSStableForKey(key string) (*record.Record, bool) {
+func (sstable *SSTable) GetRecordInSStableForKey(key string) (*Record, bool) {
 
 	found := CheckKeyInFilterFile(key, sstable.FilterFilePath)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	offsetIndexTable, found := getOffsetInIndexTableForKey(key, sstable.SummaryFilePath)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	offsetDataTable, found := getOffsetInDataTableForKey(key, sstable.IndexFilePath, offsetIndexTable, indexInterval)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	foundRecord, found := GetRecordInDataTableForOffset(sstable.DataFilePath, offsetDataTable)
 	if !found {
-		return &record.Record{}, false
+		return &Record{}, false
 	}
 	return foundRecord, true
 }
@@ -126,4 +128,60 @@ func (sstable *SSTable) DeleteSSTableFiles() {
 	file.DeleteFile(sstable.FilterFilePath)
 	file.DeleteFile(sstable.SummaryFilePath)
 	file.DeleteFile(sstable.IndexFilePath)
+}
+
+func increaseByOne(index string) string {
+	indexInt, _ := strconv.Atoi(index)
+	newIndex := indexInt + 1
+	indexString := strconv.Itoa(newIndex)
+	return indexString
+}
+
+func PutToSSTable(records []Record) {
+	index := file.GetLastIndexFromDirectory()
+	index = increaseByOne(index)
+
+	sstable := SSTableConstructor(index)
+	success := sstable.WriteRecordsToSSTable(records)
+	if success == true {
+		fmt.Println("Records are successfully writen to SSTable")
+	} else {
+		fmt.Println("Records are unsuccessfully writen to SSTable")
+	}
+}
+
+func GetFromSSTable(key string) []byte {
+	indexes := GetAllSSTableIndexes()
+	record := Record{}
+	exist := false
+
+	for _, index := range indexes {
+		sstable := SSTableConstructor(index)
+		newRecord, found := sstable.GetRecordInSStableForKey(key)
+
+		if found == true {
+			if newRecord.Timestamp > record.Timestamp {
+				record = *newRecord
+				exist = true
+			}
+		}
+	}
+	if exist == true {
+		if record.Tombstone != 1 {
+			return record.Value
+		} else {
+			return nil
+		}
+	} else {
+		return nil
+	}
+}
+
+func DeleteSSTable(index string) {
+
+	sstable := SSTableConstructor(index)
+	exist := sstable.CheckIfSSTableExist()
+	if exist == true {
+		sstable.DeleteSSTableFiles()
+	}
 }

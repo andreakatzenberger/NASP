@@ -23,11 +23,16 @@ func CreateMemtable(maxHeight int, threshold float32, maxSize int) *Memtable {
 
 //dodaje element u memtable
 func (m *Memtable) Add(key string, value []byte) {
-	percentage := (m.maxSize / m.size) * 100
-	if float32(percentage) >= m.threshold { //proverava popunjenost memtablea
-		//m.Flush()
+	if m.size == 0 {
+		m.structure.Add(key, value)
+		m.size++
 	} else {
-		if m.structure.Find(key) != nil {
+		percentage := (m.maxSize / m.size) * 100
+		if float32(percentage) >= m.threshold { //proverava popunjenost memtablea
+			m.Flush()
+			m.structure.Add(key, value)
+			m.size++
+		} else {
 			m.structure.Add(key, value)
 			m.size++
 		}
@@ -50,9 +55,9 @@ func (m *Memtable) Delete(key string) {
 	m.structure.Delete(key)
 }
 
-//func (m *Memtable) Flush() ? {
-//	Data := m.structure.GetAll()
-//	m.size = 0
-//	m.structure.Empty()
-//	return Data
-//}
+func (m *Memtable) Flush() {
+	allRecords := m.structure.SLNodeToRecord()
+	PutToSSTable(allRecords)
+	m.size = 0
+	m.structure.Empty()
+}

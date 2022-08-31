@@ -1,0 +1,4 @@
+Data/BloomFilter/user-table-data-5-BloomFilter.gob
+Data/Summary/user-table-data-5-Sumarry.gob
+Data/Index/user-table-data-5-Index.gob
+Data/Data/user-table-data-5-Data.gob

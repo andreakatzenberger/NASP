@@ -10,7 +10,7 @@ type SkipListNode struct {
 	key       string
 	value     []byte
 	timestamp int64
-	tombstone bool
+	tombstone byte
 	next      []*SkipListNode
 }
 
@@ -24,7 +24,7 @@ func createNode(key string, value []byte, timestamp int64, level int) *SkipListN
 		key:       key,
 		value:     value,
 		timestamp: timestamp,
-		tombstone: false,
+		tombstone: 0,
 		next:      make([]*SkipListNode, level),
 	}
 }
@@ -70,7 +70,7 @@ func (s *SkipList) Delete(key string) {
 	if elem == nil {
 		fmt.Println("Element ne moze biti obrisan jer ne postoji u skiplisti.")
 	} else {
-		elem.tombstone = true
+		elem.tombstone = 1
 		now := time.Now()
 		elem.timestamp = now.Unix()
 	}
@@ -118,7 +118,7 @@ func (s *SkipList) Add(key string, value []byte) {
 		now := time.Now()
 		elem.timestamp = now.Unix()
 		elem.value = value
-		elem.tombstone = false
+		elem.tombstone = 0
 	}
 }
 
@@ -128,7 +128,7 @@ func (s *SkipList) Print() {
 		curr := s.head
 		fmt.Print("[")
 		for curr.next[i] != nil {
-			if curr.next[i].tombstone == false {
+			if curr.next[i].tombstone == 0 {
 				fmt.Print(curr.next[i].key + ", ")
 			}
 			curr = curr.next[i]
@@ -154,6 +154,24 @@ func (s *SkipList) Empty() {
 	s.height = 1
 }
 
-//func (s *SkipList) GetAll() ? {
-//
-//}
+func (s *SkipList) GetAll() []SkipListNode {
+	curr := s.head
+	allElements := []SkipListNode{}
+	for i := s.height; i >= 0; i-- {
+		for curr.next[i] != nil {
+			curr = curr.next[i]
+			allElements = append(allElements, *curr)
+		}
+	}
+	return allElements
+}
+
+func (s *SkipList) SLNodeToRecord() []Record {
+	allRecords := []Record{}
+	allNodes := s.GetAll()
+	for i := 0; i < len(allNodes); i++ {
+		newRecord := CreateRecord(allNodes[i].key, allNodes[i].value, allNodes[i].tombstone)
+		allRecords = append(allRecords, *newRecord)
+	}
+	return allRecords
+}

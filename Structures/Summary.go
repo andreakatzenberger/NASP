@@ -1,8 +1,7 @@
-package SSTable
+package Structures
 
 import (
 	error "Projekat/Handling"
-	record "Projekat/Structures"
 	"bufio"
 	"bytes"
 	"encoding/binary"
@@ -31,7 +30,7 @@ func (summaryEntry *SummaryTableEntry) GetSize() uint64 {
 }
 
 //Kreiraj header (sazdrzi prvi i zadnji ključ u index fajlu)
-func CreateSummaryHeader(records []record.Record) *SummaryTableHeader {
+func CreateSummaryHeader(records []Record) *SummaryTableHeader {
 	summaryHeader := SummaryTableHeader{}
 	summaryHeader.MinKey = records[0].Key
 	summaryHeader.MinKeySize = uint64(len(summaryHeader.MinKey))
@@ -41,7 +40,7 @@ func CreateSummaryHeader(records []record.Record) *SummaryTableHeader {
 }
 
 //Kreiraj summary sa headerom i entry-ma
-func CreateSummaryHeaderAndEntries(records []record.Record) (summaryHeader *SummaryTableHeader, summaryEntries []SummaryTableEntry) {
+func CreateSummaryHeaderAndEntries(records []Record) (summaryHeader *SummaryTableHeader, summaryEntries []SummaryTableEntry) {
 	summaryHeader = CreateSummaryHeader(records)
 	summaryEntries = make([]SummaryTableEntry, 0)
 	return summaryHeader, summaryEntries
