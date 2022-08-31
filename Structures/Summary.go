@@ -1,7 +1,7 @@
-package SSTable
+package Structures
 
 import (
-	error "Projekat/Handling"
+	error "../Handling"
 	record "Projekat/Structures"
 	"bufio"
 	"bytes"

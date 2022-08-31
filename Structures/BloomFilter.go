@@ -1,10 +1,9 @@
-package SSTable
+package Structures
 
 import (
-	"Projekat/Handling"
-	"Projekat/Structures"
+	"../Handling"
 	"encoding/gob"
-	"github.com/spaolacci/murmur3"
+	//"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
 	"time"
@@ -61,7 +60,7 @@ func CreateBloomFilter(expectedElements uint, falsePositiveRate float64) *BloomF
 }
 
 //Dodavanje ključa u bloom filter
-func (filter *BloomFilter) Add(record Structures.Record) {
+func (filter *BloomFilter) Add(record Record) {
 	for _, hashF := range filter.hFunc {
 		i := HashIt(hashF, record.Key, filter.M)
 		filter.Set[i] = 1
@@ -80,7 +79,7 @@ func (filter *BloomFilter) Search(record string) bool {
 }
 
 //Upis svih ključeva u bloom filter
-func (filter *BloomFilter) WriteRecordsToBloomFilter(records *[]Structures.Record) BloomFilter {
+func (filter *BloomFilter) WriteRecordsToBloomFilter(records *[]Record) BloomFilter {
 	for _, record := range *records {
 		filter.Add(record)
 	}

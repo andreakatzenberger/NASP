@@ -1,7 +1,7 @@
 package Structures
 
 import (
-	"Projekat/Handling"
+	"../Handling"
 	"bufio"
 	"bytes"
 	"encoding/binary"
