@@ -16,7 +16,7 @@ type DefaultConfig struct {
 // ucitava defaultne konfiguracije
 func LoadDefaultConfig() *DefaultConfig {
 	return &DefaultConfig{
-		SegmentSize: 100,
+		SegmentSize: 3,
 		filesSlice:  nil,
 		MaxHeight:   5,
 		Threshold:   80,
@@ -55,7 +55,7 @@ func (app *App) Put(key string, value []byte) bool {
 	}
 	filled := app.memtable.Add(key, value)
 	if filled {
-		app.wal.DeleteSegments()
+		app.wal.Delete()
 	}
 	return true
 }

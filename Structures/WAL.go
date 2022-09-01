@@ -11,52 +11,115 @@ import (
 	"time"
 )
 
-// Izmeni
-// const (
-//
-// T_SIZE = 8
-// C_SIZE = 4
-//
-// CRC_SIZE       = T_SIZE + C_SIZE
-// TOMBSTONE_SIZE = CRC_SIZE + 1
-// KEY_SIZE       = TOMBSTONE_SIZE + T_SIZE
-// VALUE_SIZE     = KEY_SIZE + T_SIZE
-//
-// DEFAULT_SEGMENT_SIZE = 100
-//
-// )
+/*
+   +---------------+-----------------+---------------+---------------+-----------------+-...-+--...--+
+   |    CRC (4B)   | Timestamp (16B) | Tombstone(1B) | Key Size (8B) | Value Size (8B) | Key | Value |
+   +---------------+-----------------+---------------+---------------+-----------------+-...-+--...--+
+   CRC = 32bit hash computed over the payload using CRC
+   Key Size = Length of the Key data
+   Tombstone = If this record was deleted and has a value 0 - append 1 - deleted
+   Value Size = Length of the Value data
+   Key = Key data
+   Value = Value data
+   Timestamp = Timestamp of the operation in seconds
+*/
+
+const (
+	T_SIZE = 8
+	C_SIZE = 4
+
+	CRC_SIZE       = T_SIZE + C_SIZE
+	TOMBSTONE_SIZE = CRC_SIZE + 1
+	KEY_SIZE       = TOMBSTONE_SIZE + T_SIZE
+	VALUE_SIZE     = KEY_SIZE + T_SIZE
+)
+
 func CRC32(data []byte) uint32 {
 	return crc32.ChecksumIEEE(data)
 }
 
 type WAL struct {
 	SegmentSize int64
-	filesSlice  []string
+	files       []string
 }
 
-func Innit(SegmentSize int64, filesSlice []string) *WAL {
-	files, err := ioutil.ReadDir("./Data/WAL")
+// kreiranje WAL-a/ucitavanje podataka ukoliko postoje
+func Innit(SegmentSize int64, files []string) *WAL {
+	allFiles, err := ioutil.ReadDir("./Data/WAL")
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, f := range files {
-		filesSlice = append(filesSlice, f.Name())
+	for _, f := range allFiles {
+		files = append(files, f.Name())
 	}
-	if len(filesSlice) == 0 {
+	if len(files) == 0 {
 		file, err2 := os.Create("./Data/WAL/wal_1.log")
 		if err2 != nil {
 			panic(err)
 		}
 		file.Close()
-		filesSlice = append(filesSlice, "wal_1.log")
+		files = append(files, "wal_1.log")
 	}
 	return &WAL{
 		SegmentSize: SegmentSize,
-		filesSlice:  filesSlice,
+		files:       files,
 	}
 }
 
-func writeWall(file *os.File, data []byte) error {
+func fileLen(file *os.File) (int64, error) {
+	info, err := file.Stat()
+	if err != nil {
+		return 0, err
+	}
+	return info.Size(), nil
+}
+
+// kreiranje niza bajtova
+func (w *WAL) Insert(key string, value []byte, tmbStn string) bool {
+	activeFile := w.files[len(w.files)-1]
+	r, err := os.Stat("./data/WAL/" + activeFile)
+	if err != nil {
+		panic(err)
+	}
+
+	if r.Size() > w.SegmentSize {
+		activeFile = "wal_" + strconv.Itoa(len(w.files)+1) + ".log"
+		file, err2 := os.Create("./data/WAL/" + activeFile)
+		if err2 != nil {
+			panic(err)
+		}
+		file.Close()
+		w.files = append(w.files, activeFile)
+	}
+
+	var crc = CRC32(value)
+	var now = time.Now()
+	var timestamp = now.Unix()
+
+	bytes := make([]byte, 37)
+	binary.BigEndian.PutUint32(bytes[:], crc)
+	binary.BigEndian.PutUint64(bytes[4:], uint64(timestamp))
+	var tombStone = []byte{0}
+	if tmbStn == "d" {
+		tombStone = []byte{1}
+	}
+	bytes[20] = tombStone[0]
+	binary.BigEndian.PutUint64(bytes[21:], uint64(len([]byte(key))))
+	binary.BigEndian.PutUint64(bytes[29:], uint64(len(value)))
+
+	bytes = append(bytes, []byte(key)...)
+	bytes = append(bytes, value...)
+	file, err := os.OpenFile("./data/WAL/"+activeFile, os.O_RDWR, 0777)
+	defer file.Close()
+	if err != nil {
+		panic(err.Error())
+	}
+	Append(file, bytes)
+	return true
+}
+
+// dodavanje novog podatka (niza bajtova) u WAL
+func Append(file *os.File, data []byte) error {
 	currentLen, err := fileLen(file)
 	if err != nil {
 		return err
@@ -71,64 +134,10 @@ func writeWall(file *os.File, data []byte) error {
 	return nil
 }
 
-func fileLen(file *os.File) (int64, error) {
-	info, err := file.Stat()
-	if err != nil {
-		return 0, err
-	}
-	return info.Size(), nil
-}
-
-func (w *WAL) Insert(key string, value []byte, tmbStn string) bool {
-	activeFile := w.filesSlice[len(w.filesSlice)-1]
-	r, err := os.Stat("./Data/WAL/" + activeFile)
-	if err != nil {
-		panic(err)
-	}
-	if r.Size() > w.SegmentSize {
-		activeFile = "wal_" + strconv.Itoa(len(w.filesSlice)+1) + ".log"
-		file, err2 := os.Create("./Data/WAL/" + activeFile)
-		if err2 != nil {
-			panic(err)
-		}
-		file.Close()
-		w.filesSlice = append(w.filesSlice, activeFile)
-	}
-
-	var keySize = uint64(len([]byte(key)))
-	var valueSize = uint64(len(value))
-	var now = time.Now()
-	var timestamp = now.Unix()
-	var crc = CRC32(value)
-
-	fileBytes := make([]byte, 37)
-	binary.BigEndian.PutUint32(fileBytes[:], crc)
-	binary.BigEndian.PutUint64(fileBytes[4:], uint64(timestamp))
-
-	var tombStone = []byte{0}
-	if tmbStn == "d" {
-		tombStone = []byte{1}
-	}
-	fileBytes[20] = tombStone[0]
-
-	binary.BigEndian.PutUint64(fileBytes[21:], keySize)
-	binary.BigEndian.PutUint64(fileBytes[29:], valueSize)
-	fileBytes = append(fileBytes, []byte(key)...)
-	fileBytes = append(fileBytes, value...)
-
-	file, err := os.OpenFile("./Data/WAL/"+activeFile, os.O_RDWR, 0777)
-	//file, err := os.OpenFile("./Data/WAL/"+activeFile, os.O_APPEND, 0777)
-	defer file.Close()
-	if err != nil {
-		panic(err.Error())
-	}
-	writeWall(file, fileBytes)
-	return true
-}
-
-func (w *WAL) DeleteSegments() {
-	lastSegment := w.filesSlice[len(w.filesSlice)-1]
-	for _, seg := range w.filesSlice {
+// brisanje svih segmenta WAL-a
+func (w *WAL) Delete() {
+	lastSegment := w.files[len(w.files)-1]
+	for _, seg := range w.files {
 		if seg != lastSegment {
 			err := os.Remove("./Data/WAL/" + seg)
 
@@ -142,13 +151,13 @@ func (w *WAL) DeleteSegments() {
 		panic(err)
 	}
 
-	w.filesSlice = nil
-	w.filesSlice = append(w.filesSlice, "wal_1.log")
+	w.files = nil
+	w.files = append(w.files, "wal_1.log")
 }
 
 func (w *WAL) Read() map[string][]byte {
 	retMap := make(map[string][]byte)
-	for _, activeFile := range w.filesSlice {
+	for _, activeFile := range w.files {
 		file, err := os.OpenFile("./Data/WAL/"+activeFile, os.O_RDWR, 0777)
 		defer file.Close()
 		for {
