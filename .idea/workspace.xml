@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-1-BloomFilter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-1-Data.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-1-Index.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-1-Sumarry.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/WAL/wal_1.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/App.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/App.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/WAL.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/WAL.go" afterDir="false" />
-    </list>
+    <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
