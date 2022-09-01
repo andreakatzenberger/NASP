@@ -49,20 +49,27 @@ func (sstable *SSTable) CheckIfSSTableExist() bool {
 
 func (sstable *SSTable) WriteRecordsToSSTable(records []Record) bool {
 
+	//Kreiraj bloom filter
 	CreateFilterFile(sstable.FilterFilePath, records)
 
+	//Kreiraj fajlove za data i writere
 	dataFile, indexFile, summaryFile := file.CreateFiles(sstable.DataFilePath, sstable.IndexFilePath, sstable.SummaryFilePath)
 	dataFileWriter, indexFileWriter, summaryFileWriter := file.CreateFileWriters(dataFile, indexFile, summaryFile)
+
 	summaryHeader, summaryEntries := CreateSummaryHeaderAndEntries(records)
 	offSets := InitializeOffSets()
 
 	for index, record := range records {
+
+		//Upisi zapis u data fajl
 		WriteRecordToDataFile(&record, dataFileWriter)
 
+		//Upisi upisi kljuc i offset u index fajl
 		indexEntry := CreateIndexEntry(&record, offSets.dataFileOffSet)
 		indexEntry.WriteEntryToIndexFile(indexFileWriter)
 		offSets.dataFileOffSet += record.GetSize()
 
+		//Dodaj kljuc i offset u entry po intervalu
 		if (index == len(records)-1) || (index%indexInterval == 0) {
 			summaryEntry := SummaryTableEntry{KeySize: indexEntry.KeySize, Key: indexEntry.Key, Offset: offSets.indexFileOffSet}
 			summaryEntries = append(summaryEntries, summaryEntry)
@@ -71,17 +78,21 @@ func (sstable *SSTable) WriteRecordsToSSTable(records []Record) bool {
 		offSets.indexFileOffSet += indexEntry.GetSize()
 	}
 
+	//Upisi header i entry-e u summary fajl
 	summaryHeader.WriteHeaderToSummaryFile(summaryFileWriter)
 	for _, summaryEntry := range summaryEntries {
 		summaryEntry.WriteEntryToSummaryFile(summaryFileWriter)
 	}
 
+	//Zapisi sve SSTable fajlove u TOC fajl
 	sstable.WriteFileNamesToToc()
 
+	//Flushuj i zatvori sve fajlove za data
 	file.FlushAndCloseFiles(dataFileWriter, indexFileWriter, summaryFileWriter, dataFile, indexFile, summaryFile)
 	return true
 }
 
+//Kreiraj bloom filter fajl
 func CreateFilterFile(bloomFilterFilePath string, records []Record) {
 
 	filter := CreateBloomFilter(uint(len(records)), 0.05)
@@ -89,6 +100,7 @@ func CreateFilterFile(bloomFilterFilePath string, records []Record) {
 	WriteBloomFilter(bloomFilterFilePath, filter)
 }
 
+//Pronadji zapis u SSTable
 func (sstable *SSTable) GetRecordInSStableForKey(key string) (*Record, bool) {
 
 	found := CheckKeyInFilterFile(key, sstable.FilterFilePath)
@@ -110,6 +122,7 @@ func (sstable *SSTable) GetRecordInSStableForKey(key string) (*Record, bool) {
 	return foundRecord, true
 }
 
+//Nadji indexe svih SSTable-ova
 func GetAllSSTableIndexes() (indexs []string) {
 	dataPaths, _ := ioutil.ReadDir("Data/Data")
 	indexes := make([]string, 0)
@@ -121,6 +134,7 @@ func GetAllSSTableIndexes() (indexs []string) {
 	return indexes
 }
 
+//Obrisi sve SSTableFajlove
 func (sstable *SSTable) DeleteSSTableFiles() {
 	file.DeleteFile(sstable.DataFilePath)
 	file.DeleteFile(sstable.TocFilePath)
@@ -129,6 +143,7 @@ func (sstable *SSTable) DeleteSSTableFiles() {
 	file.DeleteFile(sstable.IndexFilePath)
 }
 
+//Povecaj string index za 1
 func increaseByOne(index string) string {
 	indexInt, _ := strconv.Atoi(index)
 	newIndex := indexInt + 1
