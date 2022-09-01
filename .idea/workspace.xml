@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="" />
+    <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-1-BloomFilter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-1-Data.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-1-Index.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-1-Sumarry.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/WAL/wal_1.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/WAL/wal_2.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Structures/Skiplist.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Skiplist.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,20 +38,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.go.format.on.save.advertiser.fired": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "RunOnceActivity.go.watchers.conflict.with.on.save.actions.check.performed": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "go.import.settings.migrated": "true",
-    "last_opened_file_path": "C:/Users/Andrea"
-  }
-}]]></component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.format.on.save.advertiser.fired" value="true" />
+    <property name="go.formatter.settings.were.checked" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
+    <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
+  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Svetozar\Documents\GitHub\NASP\Structures" />
@@ -107,8 +112,5 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-  </component>
-  <component name="VgoProject">
-    <settings-migrated>true</settings-migrated>
   </component>
 </project>

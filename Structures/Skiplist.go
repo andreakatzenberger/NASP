@@ -68,11 +68,19 @@ func (s *SkipList) Delete(key string) bool {
 		if foundElem == nil {
 			return false
 		} else {
+			//level := s.roll()
+			//now := time.Now()
+			//newDeleted := createNode(key, foundElem, now.Unix(), level+1)
+			//newDeleted.tombstone = 1
+			//s.Add(newDeleted.key, newDeleted.value)
 			level := s.roll()
-			now := time.Now()
-			newDeleted := createNode(key, foundElem, now.Unix(), level+1)
-			newDeleted.tombstone = 1
-			s.Add(newDeleted.key, newDeleted.value)
+			if level > s.maxHeight {
+				level = s.maxHeight
+			}
+			newNode := createNode(key, foundElem, time.Now().Unix(), level+1)
+			newNode.tombstone = 1
+			s.addLevels(newNode, level)
+			s.size++
 			return true
 		}
 	} else {
