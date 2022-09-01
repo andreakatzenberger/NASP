@@ -1,7 +1,7 @@
 package Structures
 
 type DefaultConfig struct {
-	//todo dodato za wal
+	//za wal
 	SegmentSize int64
 	filesSlice  []string
 
@@ -16,8 +16,7 @@ type DefaultConfig struct {
 // ucitava defaultne konfiguracije
 func LoadDefaultConfig() *DefaultConfig {
 	return &DefaultConfig{
-		//todo dodato za wal
-		SegmentSize: 3, //todo promeniti vrednost
+		SegmentSize: 100,
 		filesSlice:  nil,
 		MaxHeight:   5,
 		Threshold:   80,
@@ -26,7 +25,6 @@ func LoadDefaultConfig() *DefaultConfig {
 }
 
 type App struct {
-	//todo dodat je wl
 	wal      WAL
 	memtable Memtable
 }
@@ -35,13 +33,12 @@ type App struct {
 func CreateApp() *App {
 	config := LoadDefaultConfig()
 	return &App{
-		//todo wal
 		wal:      *Innit(config.SegmentSize, config.filesSlice),
 		memtable: *CreateMemtable(config.MaxHeight, config.Threshold, config.MaxSize),
 	}
 }
 
-// todo dodata funkcija
+// restauriranje podataka u memtable
 func (app *App) RestoreFromWAL() {
 	data := app.wal.Read()
 	for key, value := range data {
@@ -51,7 +48,6 @@ func (app *App) RestoreFromWAL() {
 
 // ubacuje element
 // prima kljuc tipa string i vrednost tipa bit array, a vraca bool
-// todo izmenjeno
 func (app *App) Put(key string, value []byte) bool {
 	insert := app.wal.Insert(key, value, "i")
 	if !insert {
