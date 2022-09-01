@@ -14,10 +14,6 @@ type SkipListNode struct {
 	next      []*SkipListNode
 }
 
-func GetValue(node *SkipListNode) []byte {
-	return node.value
-}
-
 //kreira novi element pomocu prosledjenih vrednosti
 func createNode(key string, value []byte, timestamp int64, level int) *SkipListNode {
 	return &SkipListNode{
@@ -57,22 +53,23 @@ func (s *SkipList) Find(key string) *SkipListNode {
 	}
 	curr = curr.next[0]
 	if curr != nil {
-		if curr.key == key {
+		if curr.key == key && curr.tombstone == 0 {
 			return curr //ako postoji vraca element
 		}
 	}
 	return nil //ako ne postoji vraca nil
 }
 
-//brise element sa zadatim kljucem menjajuci vrednost tombstonea na true
-func (s *SkipList) Delete(key string) {
+//brise element sa zadatim kljucem menjajuci vrednost tombstonea na true (1)
+func (s *SkipList) Delete(key string) bool {
 	elem := s.Find(key)
 	if elem == nil {
-		fmt.Println("Element ne moze biti obrisan jer ne postoji u skiplisti.")
+		return false
 	} else {
 		elem.tombstone = 1
 		now := time.Now()
 		elem.timestamp = now.Unix()
+		return true
 	}
 }
 
@@ -103,7 +100,7 @@ func (s *SkipList) addLevels(node *SkipListNode, level int) {
 }
 
 //dodaje element sa zadatim kljucem i vrednoscu
-func (s *SkipList) Add(key string, value []byte) {
+func (s *SkipList) Add(key string, value []byte) bool {
 	elem := s.Find(key)
 	if elem == nil { //ako element nije vec u listi dodaje se
 		level := s.roll()
@@ -114,11 +111,13 @@ func (s *SkipList) Add(key string, value []byte) {
 		newNode := createNode(key, value, now.Unix(), level+1)
 		s.addLevels(newNode, level)
 		s.size++
+		return true
 	} else { //ako element jeste vec u listi menjaju mu se vrednost
 		now := time.Now()
 		elem.timestamp = now.Unix()
 		elem.value = value
 		elem.tombstone = 0
+		return false
 	}
 }
 
@@ -129,7 +128,7 @@ func (s *SkipList) Print() {
 		fmt.Print("[")
 		for curr.next[i] != nil {
 			if curr.next[i].tombstone == 0 {
-				fmt.Print(curr.next[i].key + ", ")
+				fmt.Print("Kljuc: ", curr.next[i].key, " vrednost: ", curr.next[i].value, ", ")
 			}
 			curr = curr.next[i]
 		}
@@ -149,11 +148,15 @@ func (s *SkipList) roll() int {
 	return level
 }
 
+//prazni skip listu
 func (s *SkipList) Empty() {
+	head := createNode("", nil, 0, s.maxHeight+1)
 	s.size = 0
 	s.height = 1
+	s.head = head
 }
 
+//vraca listu svih elementa skip liste
 func (s *SkipList) GetAll() []SkipListNode {
 	curr := s.head
 	allElements := []SkipListNode{}
@@ -166,6 +169,7 @@ func (s *SkipList) GetAll() []SkipListNode {
 	return allElements
 }
 
+//listu svih elemenata liste pretvara u listu zapisa
 func (s *SkipList) SLNodeToRecord() []Record {
 	allRecords := []Record{}
 	allNodes := s.GetAll()

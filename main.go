@@ -5,38 +5,7 @@ import (
 	"fmt"
 )
 
-//func CreateRecords(first, last int) *[]record.Record {
-//	records := []record.Record{}
-//
-//	for i := first; i < last; i++ {
-//		bytes := []byte{1, 2}
-//		record := record.CreateRecord(strconv.Itoa(i), bytes, 0)
-//		records = append(records, *record)
-//	}
-//	return &records
-//}
-
 func main() {
-
-	//Zapisi u fajlu:
-	//Index number 1 - 0:99
-	//Index number 2 - 100:199
-	//Index number 3 - 500:600
-	//Index number 4 - 0:99
-
-	// Kreiraj zapise
-	//records := CreateRecords(0, 100)
-
-	// Upisi zapise u SSTable
-	//PutToSSTable(*records)
-
-	// Dobavi zapis preko kljuca iz SSTable-a
-	//GetFromSSTable("50")
-
-	// Obavi SSTable preko njegovog indexa
-	//DeleteSSTable("1")
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	app := Structures.CreateApp()
 	fmt.Println("KORISNICKI MENI")
@@ -59,7 +28,7 @@ func main() {
 			if success == true {
 				fmt.Println("Element je uspesno unet.")
 			} else {
-				fmt.Println("Element nije uspesno unet.")
+				fmt.Println("Element je ili nemoguce uneti jer vec postoji u sstable ili je uspesno izmenjen.")
 			}
 		} else if option == "2" {
 			var key string
@@ -69,7 +38,7 @@ func main() {
 			if value == nil {
 				fmt.Println("Element sa unetim kljucem ne postoji.")
 			} else {
-				fmt.Println("Vrednost elementa sa unetim kljucem je: ", value)
+				fmt.Println("Vrednost elementa sa unetim kljucem je: ", string(value))
 			}
 		} else if option == "3" {
 			var key string
@@ -87,21 +56,5 @@ func main() {
 			fmt.Println("Uneli ste nepostojecu opciju! Pokusajte ponovo!")
 		}
 	}
-
-	//sl := record.CreateSkipList(10)
-	//sl.Add("1", []byte("1"))
-	//sl.Add("2", []byte("2"))
-	//sl.Add("3", []byte("3"))
-	//sl.Add("4", []byte("4"))
-	//sl.Add("5", []byte("5"))
-	//sl.Add("6", []byte("6"))
-	//sl.Add("7", []byte("7"))
-	//sl.Add("8", []byte("8"))
-	//sl.Print()
-	//
-	//allRecords := sl.SLNodeToRecord()
-	//for i := 0; i < len(allRecords); i++ {
-	//	allRecords[i].Print()
-	//}
 
 }

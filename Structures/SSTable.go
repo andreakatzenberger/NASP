@@ -2,7 +2,6 @@ package Structures
 
 import (
 	file "Projekat/Handling"
-	//SSTable2 "Projekat/Structures/SSTable"
 	"fmt"
 	"io/ioutil"
 	"strconv"
@@ -144,9 +143,9 @@ func PutToSSTable(records []Record) {
 	sstable := SSTableConstructor(index)
 	success := sstable.WriteRecordsToSSTable(records)
 	if success == true {
-		fmt.Println("Records are successfully writen to SSTable")
+		fmt.Println("Uspesno napravljen SSTable!")
 	} else {
-		fmt.Println("Records are unsuccessfully writen to SSTable")
+		fmt.Println("SSTable nije uspeno napravljen.")
 	}
 }
 

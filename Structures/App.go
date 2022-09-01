@@ -16,7 +16,7 @@ func LoadDefaultConfig() *DefaultConfig {
 	return &DefaultConfig{
 		MaxHeight: 5,
 		Threshold: 80,
-		MaxSize:   5,
+		MaxSize:   6,
 	}
 }
 
@@ -38,8 +38,7 @@ func CreateApp() *App {
 //ubacuje element
 //prima kljuc tipa string i vrednost tipa bit array, a vraca bool
 func (app *App) Put(key string, value []byte) bool {
-	app.memtable.Add(key, value)
-	return true
+	return app.memtable.Add(key, value)
 }
 
 //trazi element
@@ -47,7 +46,6 @@ func (app *App) Put(key string, value []byte) bool {
 func (app *App) Get(key string) []byte {
 	if app.memtable.Find(key) == nil {
 		return GetFromSSTable(key)
-		//return nil
 	} else {
 		return app.memtable.Find(key)
 	}
@@ -56,6 +54,8 @@ func (app *App) Get(key string) []byte {
 //brise element
 //prima kljuc tipa string, vraca bool
 func (app *App) Delete(key string) bool {
-	app.memtable.Delete(key)
-	return true
+	//if app.memtable.Delete(key) == false {
+	//	//brisanje u sstable?
+	//}
+	return app.memtable.Delete(key)
 }
