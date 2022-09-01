@@ -1,4 +1,4 @@
-package SSTable
+package Structures
 
 import (
 	error "Projekat/Handling"

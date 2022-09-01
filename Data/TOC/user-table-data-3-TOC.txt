@@ -1,4 +1,0 @@
-Data/BloomFilter/user-table-data-3-BloomFilter.gob
-Data/Summary/user-table-data-3-Sumarry.gob
-Data/Index/user-table-data-3-Index.gob
-Data/Data/user-table-data-3-Data.gob

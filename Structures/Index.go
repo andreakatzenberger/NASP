@@ -1,8 +1,7 @@
-package SSTable
+package Structures
 
 import (
 	error "Projekat/Handling"
-	record "Projekat/Structures"
 	"bufio"
 	"encoding/binary"
 	"fmt"
@@ -21,7 +20,7 @@ func (indexEntry *IndexTableEntry) GetSize() uint64 {
 }
 
 //Kreiraj index entry pomoću zapisa
-func CreateIndexEntry(record *record.Record, offSet uint64) IndexTableEntry {
+func CreateIndexEntry(record *Record, offSet uint64) IndexTableEntry {
 	indexEntry := IndexTableEntry{KeySize: uint64(len(record.Key)), Key: record.Key, Offset: offSet}
 	return indexEntry
 }

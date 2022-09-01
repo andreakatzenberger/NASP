@@ -10,12 +10,8 @@ type SkipListNode struct {
 	key       string
 	value     []byte
 	timestamp int64
-	tombstone bool
+	tombstone byte
 	next      []*SkipListNode
-}
-
-func GetValue(node *SkipListNode) []byte {
-	return node.value
 }
 
 //kreira novi element pomocu prosledjenih vrednosti
@@ -24,7 +20,7 @@ func createNode(key string, value []byte, timestamp int64, level int) *SkipListN
 		key:       key,
 		value:     value,
 		timestamp: timestamp,
-		tombstone: false,
+		tombstone: 0,
 		next:      make([]*SkipListNode, level),
 	}
 }
@@ -57,22 +53,41 @@ func (s *SkipList) Find(key string) *SkipListNode {
 	}
 	curr = curr.next[0]
 	if curr != nil {
-		if curr.key == key {
+		if curr.key == key && curr.tombstone == 0 {
 			return curr //ako postoji vraca element
 		}
 	}
 	return nil //ako ne postoji vraca nil
 }
 
-//brise element sa zadatim kljucem menjajuci vrednost tombstonea na true
-func (s *SkipList) Delete(key string) {
+//brise element sa zadatim kljucem menjajuci vrednost tombstonea na true (1)
+func (s *SkipList) Delete(key string) bool {
 	elem := s.Find(key)
 	if elem == nil {
-		fmt.Println("Element ne moze biti obrisan jer ne postoji u skiplisti.")
+		foundElem := GetFromSSTable(key)
+		if foundElem == nil {
+			return false
+		} else {
+			//level := s.roll()
+			//now := time.Now()
+			//newDeleted := createNode(key, foundElem, now.Unix(), level+1)
+			//newDeleted.tombstone = 1
+			//s.Add(newDeleted.key, newDeleted.value)
+			level := s.roll()
+			if level > s.maxHeight {
+				level = s.maxHeight
+			}
+			newNode := createNode(key, foundElem, time.Now().Unix(), level+1)
+			newNode.tombstone = 1
+			s.addLevels(newNode, level)
+			s.size++
+			return true
+		}
 	} else {
-		elem.tombstone = true
+		elem.tombstone = 1
 		now := time.Now()
 		elem.timestamp = now.Unix()
+		return true
 	}
 }
 
@@ -103,7 +118,7 @@ func (s *SkipList) addLevels(node *SkipListNode, level int) {
 }
 
 //dodaje element sa zadatim kljucem i vrednoscu
-func (s *SkipList) Add(key string, value []byte) {
+func (s *SkipList) Add(key string, value []byte) bool {
 	elem := s.Find(key)
 	if elem == nil { //ako element nije vec u listi dodaje se
 		level := s.roll()
@@ -114,11 +129,13 @@ func (s *SkipList) Add(key string, value []byte) {
 		newNode := createNode(key, value, now.Unix(), level+1)
 		s.addLevels(newNode, level)
 		s.size++
+		return true
 	} else { //ako element jeste vec u listi menjaju mu se vrednost
 		now := time.Now()
 		elem.timestamp = now.Unix()
 		elem.value = value
-		elem.tombstone = false
+		elem.tombstone = 0
+		return false
 	}
 }
 
@@ -128,8 +145,8 @@ func (s *SkipList) Print() {
 		curr := s.head
 		fmt.Print("[")
 		for curr.next[i] != nil {
-			if curr.next[i].tombstone == false {
-				fmt.Print(curr.next[i].key + ", ")
+			if curr.next[i].tombstone == 0 {
+				fmt.Print("Kljuc: ", curr.next[i].key, " vrednost: ", curr.next[i].value, ", ")
 			}
 			curr = curr.next[i]
 		}
@@ -149,11 +166,34 @@ func (s *SkipList) roll() int {
 	return level
 }
 
+//prazni skip listu
 func (s *SkipList) Empty() {
+	head := createNode("", nil, 0, s.maxHeight+1)
 	s.size = 0
 	s.height = 1
+	s.head = head
 }
 
-//func (s *SkipList) GetAll() ? {
-//
-//}
+//vraca listu svih elementa skip liste
+func (s *SkipList) GetAll() []SkipListNode {
+	curr := s.head
+	allElements := []SkipListNode{}
+	for i := s.height; i >= 0; i-- {
+		for curr.next[i] != nil {
+			curr = curr.next[i]
+			allElements = append(allElements, *curr)
+		}
+	}
+	return allElements
+}
+
+//listu svih elemenata liste pretvara u listu zapisa
+func (s *SkipList) SLNodeToRecord() []Record {
+	allRecords := []Record{}
+	allNodes := s.GetAll()
+	for i := 0; i < len(allNodes); i++ {
+		newRecord := CreateRecord(allNodes[i].key, allNodes[i].value, allNodes[i].tombstone)
+		allRecords = append(allRecords, *newRecord)
+	}
+	return allRecords
+}
