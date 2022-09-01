@@ -4,42 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-1-BloomFilter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-2-BloomFilter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-3-BloomFilter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-4-BloomFilter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-1-Data.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-2-Data.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-3-Data.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-4-Data.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-1-Index.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-2-Index.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-3-Index.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-4-Index.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-1-Sumarry.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-2-Sumarry.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-3-Sumarry.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-4-Sumarry.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-2-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-3-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-4-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/App.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/App.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/Memtable.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Memtable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/SSTable/BloomFilter.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/BloomFilter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/SSTable/Data.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Data.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/SSTable/Index.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Index.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/SSTable/SSTable.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/SSTable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/SSTable/Summary.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Summary.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/SSTable/TOC.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/TOC.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/Skiplist.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Skiplist.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/WAL.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/WAL.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-    </list>
+    <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
