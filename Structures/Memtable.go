@@ -16,21 +16,22 @@ func CreateMemtable(maxHeight int, threshold float32, maxSize int) *Memtable {
 }
 
 //dodaje element u memtable
-func (m *Memtable) Add(key string, value []byte) bool {
-	if GetFromSSTable(key) == nil {
-		if m.structure.size == 0 {
-			return m.structure.Add(key, value)
+func (m Memtable) Add(key string, value []byte) bool {
+	if m.structure.size == 0 {
+		m.structure.Add(key, value)
+		return false
+	} else {
+		percentage := (float64(m.structure.size) / float64(m.maxSize)) * 100
+		if float32(percentage) >= m.threshold { //proverava popunjenost memtablea
+			m.Flush()
+			m.structure.Add(key, value)
+			return true
 		} else {
-			percentage := (float64(m.structure.size) / float64(m.maxSize)) * 100
-			if float32(percentage) >= m.threshold { //proverava popunjenost memtablea
-				m.Flush()
-				return m.structure.Add(key, value)
-			} else {
-				return m.structure.Add(key, value)
-			}
+			m.structure.Add(key, value)
+			return false
 		}
 	}
-	return false
+
 }
 
 //trazi element u memtableu
@@ -45,11 +46,7 @@ func (m *Memtable) Find(key string) []byte {
 
 //brise element iz memtablea
 func (m *Memtable) Delete(key string) bool {
-	//if m.structure.Delete(key) == false {
-
-	//} else {
 	return m.structure.Delete(key)
-	//}
 }
 
 func (m *Memtable) Flush() {

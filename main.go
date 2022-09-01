@@ -7,7 +7,13 @@ import (
 
 func main() {
 
+	//Structures.PrintDataFile("Data/Data/user-table-data-1-Data.gob")
+	//Structures.PrintDataFile("Data/Data/user-table-data-2-Data.gob")
+	//Structures.PrintDataFile("Data/Data/user-table-data-3-Data.gob")
+	Structures.PrintDataFile("Data/Data/user-table-data-4-Data.gob")
+
 	app := Structures.CreateApp()
+	app.RestoreFromWAL()
 	fmt.Println("KORISNICKI MENI")
 	for {
 		fmt.Println("1) PUT\n" +

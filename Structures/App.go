@@ -1,7 +1,9 @@
 package Structures
 
 type DefaultConfig struct {
-	//dodati za wal
+	//todo dodato za wal
+	SegmentSize int64
+	filesSlice  []string
 
 	//za skiplistu
 	MaxHeight int
@@ -11,38 +13,59 @@ type DefaultConfig struct {
 	MaxSize   int
 }
 
-//ucitava defaultne konfiguracije
+// ucitava defaultne konfiguracije
 func LoadDefaultConfig() *DefaultConfig {
 	return &DefaultConfig{
-		MaxHeight: 5,
-		Threshold: 80,
-		MaxSize:   6,
+		//todo dodato za wal
+		SegmentSize: 3, //todo promeniti vrednost
+		filesSlice:  nil,
+		MaxHeight:   5,
+		Threshold:   80,
+		MaxSize:     6,
 	}
 }
 
 type App struct {
-	//wal
+	//todo dodat je wl
+	wal      WAL
 	memtable Memtable
 }
 
-//kreira sistem
+// kreira sistem
 func CreateApp() *App {
 	config := LoadDefaultConfig()
 	return &App{
-		//wal
+		//todo wal
+		wal:      *Innit(config.SegmentSize, config.filesSlice),
 		memtable: *CreateMemtable(config.MaxHeight, config.Threshold, config.MaxSize),
-		//sstable
 	}
 }
 
-//ubacuje element
-//prima kljuc tipa string i vrednost tipa bit array, a vraca bool
-func (app *App) Put(key string, value []byte) bool {
-	return app.memtable.Add(key, value)
+// todo dodata funkcija
+func (app *App) RestoreFromWAL() {
+	data := app.wal.Read()
+	for key, value := range data {
+		app.memtable.Add(key, value)
+	}
 }
 
-//trazi element
-//prima kljuc tipa string, a vraca vrednost tipa bit array
+// ubacuje element
+// prima kljuc tipa string i vrednost tipa bit array, a vraca bool
+// todo izmenjeno
+func (app *App) Put(key string, value []byte) bool {
+	insert := app.wal.Insert(key, value, "i")
+	if !insert {
+		return false
+	}
+	filled := app.memtable.Add(key, value)
+	if filled {
+		app.wal.DeleteSegments()
+	}
+	return true
+}
+
+// trazi element
+// prima kljuc tipa string, a vraca vrednost tipa bit array
 func (app *App) Get(key string) []byte {
 	if app.memtable.Find(key) == nil {
 		return GetFromSSTable(key)
@@ -51,11 +74,12 @@ func (app *App) Get(key string) []byte {
 	}
 }
 
-//brise element
-//prima kljuc tipa string, vraca bool
+// brise element
+// prima kljuc tipa string, vraca bool
 func (app *App) Delete(key string) bool {
-	//if app.memtable.Delete(key) == false {
-	//	//brisanje u sstable?
-	//}
+	insert := app.wal.Insert(key, make([]byte, 0), "d")
+	if !insert {
+		return false
+	}
 	return app.memtable.Delete(key)
 }

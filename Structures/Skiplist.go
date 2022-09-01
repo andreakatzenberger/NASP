@@ -64,7 +64,17 @@ func (s *SkipList) Find(key string) *SkipListNode {
 func (s *SkipList) Delete(key string) bool {
 	elem := s.Find(key)
 	if elem == nil {
-		return false
+		foundElem := GetFromSSTable(key)
+		if foundElem == nil {
+			return false
+		} else {
+			level := s.roll()
+			now := time.Now()
+			newDeleted := createNode(key, foundElem, now.Unix(), level+1)
+			newDeleted.tombstone = 1
+			s.Add(newDeleted.key, newDeleted.value)
+			return true
+		}
 	} else {
 		elem.tombstone = 1
 		now := time.Now()
