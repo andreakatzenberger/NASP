@@ -6,16 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4df8c938-4124-44a9-a396-1162c77bc81c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/BloomFilter/user-table-data-1-BloomFilter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Data/user-table-data-1-Data.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Index/user-table-data-1-Index.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Summary/user-table-data-1-Sumarry.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/TOC/user-table-data-1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/App.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/App.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/Memtable.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Memtable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/Record.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Record.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/Skiplist.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/Skiplist.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structures/WAL.go" beforeDir="false" afterPath="$PROJECT_DIR$/Structures/WAL.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
